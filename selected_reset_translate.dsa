@@ -1,0 +1,9 @@
+// DAZ Studio version 4.21.0.5 filetype DAZ Script
+
+var oCurrentNode = Scene.getPrimarySelection();
+var xTrans = oCurrentNode.findProperty("XTranslate");
+var yTrans = oCurrentNode.findProperty("YTranslate");
+var zTrans = oCurrentNode.findProperty("ZTranslate");
+xTrans.setValue(0);	
+yTrans.setValue(0);
+zTrans.setValue(0);
