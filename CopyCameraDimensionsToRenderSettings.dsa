@@ -1,0 +1,20 @@
+// DAZ Studio version 4.21.0.5 filetype DAZ Script
+
+//Getting the render settings.
+var renderMgr = App.getRenderMgr()
+var activeRenderer = renderMgr.getActiveRenderer()
+var renderElements = renderMgr.getRenderElementObjects();
+element = renderElements[0];
+
+// finding the Pixel size and Aspect Ratio properties from render settings.
+var renderSettingsPixelSize = element.findProperty("Pixel Size");
+var renderSettingsAspectRatio = element.findProperty("Aspect Ratio");
+
+//getting the currently selected camera's Pixel Size and Aspect Ratio properties.
+cameraToCopy = Scene.getPrimarySelection();
+var cameraCopyPixelSize = cameraToCopy.findProperty("Pixel Size");
+var cameraCopyAspectRatio = cameraToCopy.findProperty("Aspect Ratio");
+
+//Overwriting render settings with camera's properties.
+renderSettingsPixelSize.copyFrom(cameraCopyPixelSize);
+renderSettingsAspectRatio.copyFrom(cameraCopyAspectRatio);
