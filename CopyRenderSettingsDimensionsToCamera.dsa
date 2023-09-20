@@ -15,6 +15,6 @@ cameraToCopy = Scene.getPrimarySelection();
 var cameraCopyPixelSize = cameraToCopy.findProperty("Pixel Size");
 var cameraCopyAspectRatio = cameraToCopy.findProperty("Aspect Ratio");
 
-//Overwriting render settings with camera's properties.
+//Overwriting camera settings with RenderSetting's properties.
 cameraCopyPixelSize.copyFrom(renderSettingsPixelSize);
 cameraCopyAspectRatio.copyFrom(renderSettingsAspectRatio);
