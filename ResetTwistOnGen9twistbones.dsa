@@ -1,0 +1,13 @@
+// DAZ Studio version 4.21.0.5 filetype DAZ Script
+
+figureToFix = Scene.getPrimarySelection();
+var childNodes = figureToFix.getNodeChildren(true);
+
+for (var i = 0; i < childNodes.length; i++) {
+	const myString = childNodes[i].name;
+	var currentNode = childNodes[i];
+	if (myString.indexOf("twist") !== -1) {
+	var twistVal = currentNode.findPropertyByLabel("Twist");
+	twistVal.setValue(twistVal.getDefaultValue());
+	}
+} 
