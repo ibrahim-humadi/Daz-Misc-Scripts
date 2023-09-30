@@ -11,3 +11,7 @@ CopyCameraDimensionsToRenderSettings.dsa - Copys the currently selected Camera's
 CopyRenderSettingsDimensionsToCamera.dsa - Copys the global render settings Dimensions to the currently selected camera.<br>
 <br>
 CopyRenderSettingsDimensionsToAllCamera.dsa - Copys the global render settings Dimensions to all cameras in the scene.<br>
+<br>
+ResetTwistOnGen9twistbones.dsa - gets genisis 9 bones with the word "twist" in their nodename and sets their twist parameter to defualt. Fixes pose<br>
+symetery artifacts.
+<br>
