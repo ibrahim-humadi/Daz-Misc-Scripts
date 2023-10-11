@@ -1,8 +1,8 @@
 // DAZ Studio version 4.21.0.5 filetype DAZ Script
 
 //Getting the render settings.
-var renderMgr = App.getRenderMgr()
-var activeRenderer = renderMgr.getActiveRenderer()
+var renderMgr = App.getRenderMgr();
+var activeRenderer = renderMgr.getActiveRenderer();
 var renderElements = renderMgr.getRenderElementObjects();
 element = renderElements[0];
 

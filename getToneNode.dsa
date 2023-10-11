@@ -1,12 +1,16 @@
 // DAZ Studio version 4.21.0.5 filetype DAZ Script
 
+// Get all all Nodes
 var allNodes = Scene.getNodeList();
+// deselect all Nodes in scene
 Scene.selectAllNodes(false);
+
+// Select the singleton/ToneMapper node
 for (var i = 0; i < allNodes.length; i++) {
     var node = allNodes[i];
     if (node.name == "ToneMapper Options")
     {
-    	node.select()
+    	node.select();
     	print(node.name);
     	break;
     }
