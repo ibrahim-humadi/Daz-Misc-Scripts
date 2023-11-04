@@ -1,0 +1,4 @@
+// DAZ Studio version 4.22.0.1 filetype DAZ Script
+
+var mainWindow = App.getInterface();
+mainWindow.doNewFile();
