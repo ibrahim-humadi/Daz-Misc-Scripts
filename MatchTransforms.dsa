@@ -1,0 +1,45 @@
+// DAZ Studio version 4.22.0.1 filetype DAZ Script
+
+(function(){
+//Get selected nodes.
+var nodes = Scene.getSelectedNodeList();
+
+// Get the first selected node's transforms.
+var nodeXTransform = nodes[0].findProperty("XTranslate");
+var nodeYTransform = nodes[0].findProperty("YTranslate");
+var nodeZTransform = nodes[0].findProperty("ZTranslate");
+
+var nodeXRotate = nodes[0].findProperty("XRotate");
+var nodeYRotate = nodes[0].findProperty("YRotate");
+var nodeZRotate = nodes[0].findProperty("XTranslate");
+
+var nodeXScale = nodes[0].findProperty("XScale");
+var nodeYScale = nodes[0].findProperty("YScale");
+var nodeZScale = nodes[0].findProperty("ZScale");
+
+// Get the target's transforms.
+var targetXTransform = nodes[1].findProperty("XTranslate");
+var targetYTransform = nodes[1].findProperty("YTranslate");
+var targetZTransform = nodes[1].findProperty("ZTranslate");
+
+var targetXRotate = nodes[1].findProperty("XRotate");
+var targetYRotate = nodes[1].findProperty("YRotate");
+var targetZRotate = nodes[1].findProperty("XTranslate");
+
+var targetXScale = nodes[1].findProperty("XScale");
+var targetYScale = nodes[1].findProperty("YScale");
+var targetZScale = nodes[1].findProperty("ZScale");
+
+// Copying the transforms over to the first node.
+beginUndo();
+nodeXTransform.copyFrom(targetXTransform);
+nodeYTransform.copyFrom(targetYTransform);
+nodeZTransform.copyFrom(targetZTransform);
+nodeXRotate.copyFrom(targetXRotate);
+nodeYRotate.copyFrom(targetYRotate);
+nodeZRotate.copyFrom(targetZRotate);
+nodeXScale.copyFrom(targetXScale);
+nodeYScale.copyFrom(targetYScale);
+nodeZScale.copyFrom(targetZScale);
+acceptUndo("Matched " + nodes[0].name + " to " + nodes[1].name);
+})();
