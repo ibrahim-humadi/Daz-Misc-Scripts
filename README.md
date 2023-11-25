@@ -16,3 +16,5 @@ CopyRenderSettingsDimensionsToAllCamera.dsa - Copys the global render settings D
 ResetTwistOnGen9twistbones.dsa - gets genisis 9 bones with the word "twist" in their nodename and sets their twist parameter to defualt. Fixes pose symetery artifacts.<br>
 <br>
 newScene - Clears the scene without showing a dialog box (good if you ad-phobic)<br>
+<br>
+MatchTransforms.dsa - Takes the first selected node and change's its Transform's (XYZ Translate, rotate and scale) to match the second selected node/figure.<br>
