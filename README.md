@@ -18,3 +18,6 @@ ResetTwistOnGen9twistbones.dsa - gets genisis 9 bones with the word "twist" in t
 newScene - Clears the scene without showing a dialog box (good if you ad-phobic)<br>
 <br>
 MatchTransforms.dsa - Takes the first selected node and change's its Transform's (XYZ Translate, rotate and scale) to match the second selected node/figure.<br>
+<br>
+MoveToFocalPoint.dsa - Moves the currently selected node/node's to the current viewport's focal point.<br>
+<br>
