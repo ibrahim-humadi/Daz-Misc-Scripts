@@ -1,0 +1,16 @@
+// DAZ Studio version 4.22.0.1 filetype DAZ Script
+(function(){
+// Get the current viewport's camera
+var viewPortMgr = MainWindow.getViewportMgr();
+var viewPort = viewPortMgr.getActiveViewport().get3DViewport();
+var camera = viewPort.getCamera();
+var cords = camera.getFocalPoint(); 
+//Get selected Nodes
+var selectedNodes = Scene.getSelectedNodeList();
+//set each nodes position to focal point
+beginUndo();
+for( i = 0; i < selectedNodes.length; i += 1 ){
+		selectedNodes[i].setWSPos(cords);
+	}
+acceptUndo("Moved " + selectedNodes.length + " node to FP of " + camera.name);
+})();
