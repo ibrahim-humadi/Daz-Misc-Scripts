@@ -1,0 +1,17 @@
+// DAZ Studio version 4.22.0.1 filetype DAZ Script
+
+(function(){
+// Get the current viewport's camera.
+var viewPortMgr = MainWindow.getViewportMgr();
+var viewPort = viewPortMgr.getActiveViewport().get3DViewport();
+var camera = viewPort.getCamera();
+//Get selected nodes and deselect them.
+var selectedNodes = Scene.getSelectedNodeList();
+beginUndo();
+for( i = 0; i < selectedNodes.length; i += 1 ){
+		selectedNodes[i].select(false);
+	}
+//select camera node
+camera.select(true);
+acceptUndo("Selected: " + camera.name);
+})();

@@ -1,6 +1,7 @@
 # Daz-Misc-Scripts
 Scripts I cannot catagorize easily<br>
 <br>
+<br>
 getEnvNode.dsa - Deselects all selected nodes and selects "Environment Options" Node only<br>
 <br>
 getToneNode.dsa - Deselects all selected nodes and selects "Environment Options" Node only<br>
@@ -21,3 +22,4 @@ MatchTransforms.dsa - Takes the first selected node and change's its Transform's
 <br>
 MoveToFocalPoint.dsa - Moves the currently selected node/node's to the current viewport's focal point.<br>
 <br>
+GetCurrentCamNode.dsa - selects the currently viewed camera's node<br>
