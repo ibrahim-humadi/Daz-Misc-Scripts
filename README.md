@@ -22,4 +22,4 @@ MatchTransforms.dsa - Takes the first selected node and change's its Transform's
 <br>
 MoveToFocalPoint.dsa - Moves the currently selected node/node's to the current viewport's focal point.<br>
 <br>
-GetCurrentCamNode.dsa - selects the currently viewed camera's node<br>
+GetCurrentCamOrSpotNode.dsa - selects the currently viewported camera's or spotlight's node<br>
