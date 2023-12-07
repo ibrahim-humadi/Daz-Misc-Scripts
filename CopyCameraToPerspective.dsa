@@ -1,0 +1,17 @@
+// DAZ Studio version 4.22.0.1 filetype DAZ Script
+
+(function(){
+//Get perspective view
+var viewPortMgr = MainWindow.getViewportMgr();
+var viewPort = viewPortMgr.getActiveViewport().get3DViewport();
+var camera = viewPort.getCamera();
+
+//Get camera to copy from
+cameraToCopy = Scene.getPrimarySelection();
+var cameraToCopyCords = cameraToCopy.getFocalPoint(); 
+var camPosToCopy = cameraToCopy.getWSPos();
+
+//Set perspective to cameras settings.
+camera.setWSPos(camPosToCopy);
+camera.aimAt(cameraToCopyCords);
+})();
