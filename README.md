@@ -31,3 +31,6 @@ clearCallbacks.dsa - Clears all DzCallbacks // !for debugging scripts!<br>
 selectChildNodes.dsa - Selects all currently selected child nodes recursively.<br>
 <br>
 hideAll.dsa - Hides all nodes<br>
+<br>
+clearSelection.dsa - Clears selection<br>
+<br>

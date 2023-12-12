@@ -1,0 +1,10 @@
+// DAZ Studio version 4.22.0.1 filetype DAZ Script
+
+(function(){
+	var nodes = Scene.getSelectedNodeList();
+	beginUndo();
+	for( i = 0; i < nodes.length; i += 1 ){
+		nodes[i].select(false);
+	}
+	acceptUndo("deselected " + nodes.length + " nodes");
+})();
