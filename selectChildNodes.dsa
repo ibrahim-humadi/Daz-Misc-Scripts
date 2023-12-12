@@ -1,0 +1,14 @@
+// DAZ Studio version 4.22.0.1 filetype DAZ Script
+
+(function(){
+	var nodes = Scene.getSelectedNodeList();
+	for( i = 0; i < nodes.length; i += 1 ){
+		if (nodes[i].getNumNodeChildren() > 0) {
+			 childNodes = nodes[i].getNodeChildren(true);
+			 for( k = 0; k < childNodes.length; k += 1 ){
+			 	childNodes[k].select(true);
+			 }
+			 nodes[i].select(true);
+		}
+	}
+})();

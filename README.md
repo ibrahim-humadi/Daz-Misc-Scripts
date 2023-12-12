@@ -25,3 +25,9 @@ MoveToFocalPoint.dsa - Moves the currently selected node/node's to the current v
 GetCurrentCamOrSpotNode.dsa - selects the currently viewported camera's or spotlight's node<br>
 <br>
 CopyCameraToPerspective.dsa - In perspective view, select a camera and run the script. The perspective view will match the camera.<br>
+<br>
+clearCallbacks.dsa - Clears all DzCallbacks // !for debugging scripts!<br>
+<br>
+selectChildNodes.dsa - Selects all currently selected child nodes recursively.<br>
+<br>
+hideAll.dsa - Hides all nodes<br>

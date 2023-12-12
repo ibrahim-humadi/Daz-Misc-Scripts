@@ -1,0 +1,10 @@
+// DAZ Studio version 4.22.0.1 filetype DAZ Script
+
+(function(){
+	var nodes = Scene.getNodeList();
+	beginUndo();
+	for( i = 0; i < nodes.length; i += 1 ){
+		nodes[i].setVisible(false);
+	}
+	acceptUndo("Hid " + nodes.length + " nodes");
+})();
