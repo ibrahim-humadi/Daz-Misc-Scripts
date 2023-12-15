@@ -1,0 +1,9 @@
+// DAZ Studio version 4.22.0.1 filetype DAZ Script
+
+(function(){
+selectedNode = Scene.getPrimarySelection();
+var vector = DzVec3(0,0,0);
+beginUndo();
+selectedNode.setOrigin(vector,true);
+acceptUndo("Set CentrePoint to 0 on " + selectedNode.name);
+})();

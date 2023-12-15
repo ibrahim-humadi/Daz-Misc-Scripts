@@ -34,3 +34,5 @@ hideAll.dsa - Hides all nodes<br>
 <br>
 clearSelection.dsa - Clears selection<br>
 <br>
+setOrigin0.dsa - Sets the currently selected node's centrePoint to 0,0,0 // Save's doing manually in joint editor.<br>
+<br>
