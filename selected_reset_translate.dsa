@@ -1,5 +1,6 @@
 // DAZ Studio version 4.21.0.5 filetype DAZ Script
 
+(function(){
 // Get selected Node/figure
 var oCurrentNode = Scene.getPrimarySelection();
 
@@ -8,7 +9,10 @@ var xTrans = oCurrentNode.findProperty("XTranslate");
 var yTrans = oCurrentNode.findProperty("YTranslate");
 var zTrans = oCurrentNode.findProperty("ZTranslate");
 
+beginUndo();
 // Set properties to 0
 xTrans.setValue(0);	
 yTrans.setValue(0);
 zTrans.setValue(0);
+acceptUndo("Moved " + oCurrentNode.name + "to 0,0,0");
+})();
