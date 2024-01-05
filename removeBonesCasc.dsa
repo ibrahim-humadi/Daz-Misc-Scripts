@@ -14,7 +14,8 @@ var arrayOfChildren = ["Genesis9Eyelashes","Genesis9Tear","Genesis9Mouth","G9Eye
 
 var arrayOfBones = ["Upper Face Rig","Lower Face Rig","Left Brow Inner","Left Brow Outer","Right Brow Inner","Right Brow Outer",
 	"Left Eyelid Upper","Right Eyelid Upper","Right Eyelid Lower","Left Squint","Right Squint","Left Nostril",
-	"Right Nostril","Left Infraorbital","Right Infraorbital"];
+	"Right Nostril","Left Infraorbital","Right Infraorbital", "Left Lip Corner", "Right Lip Corner", "Left Cheek Lower",
+	"Right Cheek Lower", "Lip Lower Middle"];
 	
 Scene.selectAllNodes(false);
 
