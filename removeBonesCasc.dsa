@@ -2,14 +2,8 @@
 
 var figure = Scene.getPrimarySelection();
 var figureChildren = figure.getNodeChildren();
-figure.setVisible(false);
-for( i = 0; i < figureChildren.length; i += 1 ){
-	figureChildren[i].setVisible(false);
-}
-figure.duplicate(true);
-var dupNode = Scene.findNodeByLabel(figure.getLabel() + " (2)");
 
-var skeleton = dupNode.getSkeleton(); 
+var skeleton = figure.getSkeleton(); 
 var bones = skeleton.getAllBones(); 
 
 var actionMgr = MainWindow.getActionMgr();
@@ -25,7 +19,7 @@ var arrayOfBones = ["Upper Face Rig","Lower Face Rig","Left Brow Inner","Left Br
 Scene.selectAllNodes(false);
 
 for( i = 0; i < arrayOfChildren.length; i += 1 ){
-	var child = dupNode.findNodeChild(arrayOfChildren[i]);
+	var child = figure.findNodeChild(arrayOfChildren[i]);
 	Scene.removeNode(child);
 }
 
@@ -35,11 +29,36 @@ for( i = 0; i < arrayOfBones.length; i += 1 ){
 	deleteAction.trigger();	
 }
 
-dupNode.setVisible(true);
-var dupNodeChildren = dupNode.getNodeChildren();
-for( i = 0; i < dupNodeChildren.length; i += 1 ){
-	dupNodeChildren[i].setVisible(true);
-}
-
-dupNode.select(true);
+figure.select(true);
 resetFigurePoseAction.trigger();
+
+var exportMgr = App.getExportMgr();
+var exporter = exportMgr.findExporterByClassName("DzFbxExporter");
+if (exporter)
+	{
+		var oSettings = new DzFileIOSettings();
+		oSettings.setBoolValue( "doSelected", true );
+		oSettings.setBoolValue( "doVisible", false );
+		oSettings.setBoolValue( "doFigures", true );
+		oSettings.setBoolValue( "doProps", false );
+		oSettings.setBoolValue( "doLights", false );
+		oSettings.setBoolValue( "doCameras", false );
+		oSettings.setBoolValue( "doAnims", true );
+		oSettings.setBoolValue( "doEmbed", false );
+		oSettings.setBoolValue( "doCopyTextures", false );
+		oSettings.setBoolValue( "doDiffuseOpacity", false );
+		oSettings.setBoolValue( "doMergeClothing", false );
+		oSettings.setBoolValue( "doStaticClothing", false );
+		oSettings.setBoolValue( "degradedSkinning", true );
+		oSettings.setBoolValue( "degradedScaling", true );
+		oSettings.setBoolValue( "doSubD", false );
+		oSettings.setBoolValue( "doCollapseUVTiles", false );
+		oSettings.setIntValue( "RunSilent", 1 );
+		
+		var sInitialPath = ( figure ? String( "%1/%2" ).arg( exportMgr.getExportPath() ).arg( figure.name ) : exportMgr.getExportPath() );
+		var sPath = FileDialog.doFileDialog( false,"Please Specify where to output fbx");
+		
+		if( sPath && MainWindow.checkExistingFile( sPath ) ){
+			exporter.writeFile( sPath, oSettings );
+		}
+	}
