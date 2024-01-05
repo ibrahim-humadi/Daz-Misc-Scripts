@@ -35,6 +35,8 @@
 ## Genesis 9 Bones
 * **ResetTwistOnGen9twistbones.dsa**
   - Gets Genesis 9 bones with the word "twist" in their node name and sets their twist parameter to default. Fixes pose symmetry artifacts.
+* **removeBonesCasc.dsa**
+  - Select gen9 char and run script to remove facial bones, A pose figure (Pick Zero if/when prompted) + silent fbx export for import to Cascadeur (below free tier bone limit).
 
 ## Callbacks and Selection
 * **clearCallbacks.dsa**
