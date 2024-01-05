@@ -1,11 +1,22 @@
 // DAZ Studio version 4.22.0.1 filetype DAZ Script
 
 var figure = Scene.getPrimarySelection();
-var skeleton = figure.getSkeleton(); 
+var figureChildren = figure.getNodeChildren();
+figure.setVisible(false);
+for( i = 0; i < figureChildren.length; i += 1 ){
+	figureChildren[i].setVisible(false);
+}
+figure.duplicate(true);
+var dupNode = Scene.findNodeByLabel(figure.getLabel() + " (2)");
+var dupNodeChildren = dupNode.getNodeChildren();
+
+var skeleton = dupNode.getSkeleton(); 
 var bones = skeleton.getAllBones(); 
 
 var actionMgr = MainWindow.getActionMgr();
 var deleteAction = actionMgr.findAction( "DzJEDeleteBoneAction" );
+
+var arrayOfChildren = ["Genesis9Eyelashes","Genesis9Tear","Genesis9Mouth","G9EyebrowFibers"];
 
 var arrayOfBones = ["Upper Face Rig","Lower Face Rig","Left Brow Inner","Left Brow Outer","Right Brow Inner","Right Brow Outer",
 	"Left Eyelid Upper","Right Eyelid Upper","Right Eyelid Lower","Left Squint","Right Squint","Left Nostril",
@@ -13,8 +24,20 @@ var arrayOfBones = ["Upper Face Rig","Lower Face Rig","Left Brow Inner","Left Br
 	
 Scene.selectAllNodes(false);
 
+for( i = 0; i < arrayOfChildren.length; i += 1 ){
+	var child = dupNode.findNodeChild(arrayOfChildren[i]);
+	Scene.removeNode(child);
+}
+
 for( i = 0; i < arrayOfBones.length; i += 1 ){
 	var bone = skeleton.findBoneByLabel(arrayOfBones[i]);
 	bone.select(true);
 	deleteAction.trigger();	
 }
+
+dupNode.setVisible(true);
+for( i = 0; i < dupNodeChildren.length; i += 1 ){
+	dupNodeChildren[i].setVisible(true);
+}
+
+dupNode.select(true);
