@@ -10,7 +10,7 @@ var actionMgr = MainWindow.getActionMgr();
 var deleteAction = actionMgr.findAction( "DzJEDeleteBoneAction" );
 var resetFigurePoseAction = actionMgr.findAction("DzZeroFigurePoseAction");
 
-var arrayOfChildren = ["Genesis 9 Eyes","Genesis9Eyelashes","Genesis9Tear","Genesis9Mouth","G9EyebrowFibers"];
+var arrayOfChildren = ["Genesis9Eyes","Genesis9Eyelashes","Genesis9Tear","Genesis9Mouth","G9EyebrowFibers"];
 
 var arrayOfBones = ["Upper Face Rig","Lower Face Rig","Left Brow Inner","Left Brow Outer","Right Brow Inner","Right Brow Outer",
 	"Left Eyelid Upper","Right Eyelid Upper","Left Eyelid Lower","Right Eyelid Lower","Left Squint","Right Squint","Left Nostril",
