@@ -1,0 +1,14 @@
+// DAZ Studio version 4.22.0.1 filetype DAZ Script
+
+(function(){
+	var actionMgr = MainWindow.getActionMgr();
+	var clearAction = actionMgr.findAction( "DzJEDeleteBoneAction" );
+	var deleteAction = actionMgr.findAction( "DzJEDeleteBoneAction" );
+	
+	var nodes = Scene.getSelectedNodeList();
+	Scene.selectAllNodes(false);
+	for( i = 0; i < nodes.length; i += 1 ){
+		nodes[i].select(true);
+		deleteAction.trigger();
+	}
+})();

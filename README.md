@@ -21,6 +21,8 @@
   - Selects all currently selected child nodes recursively.
 * **setOrigin0.dsa**
   - Sets the currently selected node's centrePoint to 0,0,0. (Saves doing it manually in the joint editor)
+* **deleteBones.dsa**
+  - Deletes currently selected bones.
 
 ## Camera and Render Settings
 * **CopyCameraDimensionsToRenderSettings.dsa**
