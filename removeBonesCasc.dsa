@@ -8,13 +8,13 @@ for( i = 0; i < figureChildren.length; i += 1 ){
 }
 figure.duplicate(true);
 var dupNode = Scene.findNodeByLabel(figure.getLabel() + " (2)");
-var dupNodeChildren = dupNode.getNodeChildren();
 
 var skeleton = dupNode.getSkeleton(); 
 var bones = skeleton.getAllBones(); 
 
 var actionMgr = MainWindow.getActionMgr();
 var deleteAction = actionMgr.findAction( "DzJEDeleteBoneAction" );
+var resetFigurePoseAction = actionMgr.findAction("DzZeroFigurePoseAction");
 
 var arrayOfChildren = ["Genesis9Eyelashes","Genesis9Tear","Genesis9Mouth","G9EyebrowFibers"];
 
@@ -36,8 +36,10 @@ for( i = 0; i < arrayOfBones.length; i += 1 ){
 }
 
 dupNode.setVisible(true);
+var dupNodeChildren = dupNode.getNodeChildren();
 for( i = 0; i < dupNodeChildren.length; i += 1 ){
 	dupNodeChildren[i].setVisible(true);
 }
 
 dupNode.select(true);
+resetFigurePoseAction.trigger();
