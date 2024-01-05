@@ -1,0 +1,20 @@
+// DAZ Studio version 4.22.0.1 filetype DAZ Script
+
+var figure = Scene.getPrimarySelection();
+var skeleton = figure.getSkeleton(); 
+var bones = skeleton.getAllBones(); 
+
+var actionMgr = MainWindow.getActionMgr();
+var deleteAction = actionMgr.findAction( "DzJEDeleteBoneAction" );
+
+var arrayOfBones = ["Upper Face Rig","Lower Face Rig","Left Brow Inner","Left Brow Outer","Right Brow Inner","Right Brow Outer",
+	"Left Eyelid Upper","Right Eyelid Upper","Right Eyelid Lower","Left Squint","Right Squint","Left Nostril",
+	"Right Nostril","Left Infraorbital","Right Infraorbital"];
+	
+Scene.selectAllNodes(false);
+
+for( i = 0; i < arrayOfBones.length; i += 1 ){
+	var bone = skeleton.findBoneByLabel(arrayOfBones[i]);
+	bone.select(true);
+	deleteAction.trigger();	
+}
