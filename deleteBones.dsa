@@ -2,7 +2,6 @@
 
 (function(){
 	var actionMgr = MainWindow.getActionMgr();
-	var clearAction = actionMgr.findAction( "DzJEDeleteBoneAction" );
 	var deleteAction = actionMgr.findAction( "DzJEDeleteBoneAction" );
 	
 	var nodes = Scene.getSelectedNodeList();
