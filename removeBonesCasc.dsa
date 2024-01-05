@@ -13,9 +13,10 @@ var resetFigurePoseAction = actionMgr.findAction("DzZeroFigurePoseAction");
 var arrayOfChildren = ["Genesis9Eyelashes","Genesis9Tear","Genesis9Mouth","G9EyebrowFibers"];
 
 var arrayOfBones = ["Upper Face Rig","Lower Face Rig","Left Brow Inner","Left Brow Outer","Right Brow Inner","Right Brow Outer",
-	"Left Eyelid Upper","Right Eyelid Upper","Right Eyelid Lower","Left Squint","Right Squint","Left Nostril",
+	"Left Eyelid Upper","Right Eyelid Upper","Left Eyelid Lower","Right Eyelid Lower","Left Squint","Right Squint","Left Nostril",
 	"Right Nostril","Left Infraorbital","Right Infraorbital", "Left Lip Corner", "Right Lip Corner", "Left Cheek Lower",
-	"Right Cheek Lower", "Lip Lower Middle"];
+	"Right Cheek Lower", "Lip Lower Middle","Left Lip Lower","Right Lip Lower","Left Lip Upper","Right Lip Upper","Upper Teeth",
+	"Lip Upper Middle","Left Cheek","Right Cheek","Lower Teeth","Chin","Left Ear","Right Ear","Center Brow","Left Eye","Right Eye"];
 	
 Scene.selectAllNodes(false);
 
