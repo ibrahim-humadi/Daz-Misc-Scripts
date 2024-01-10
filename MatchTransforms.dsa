@@ -11,20 +11,21 @@ var nodeZTransform = nodes[0].findProperty("ZTranslate");
 
 var nodeXRotate = nodes[0].findProperty("XRotate");
 var nodeYRotate = nodes[0].findProperty("YRotate");
-var nodeZRotate = nodes[0].findProperty("XTranslate");
+var nodeZRotate = nodes[0].findProperty("ZRotate");
 
 var nodeXScale = nodes[0].findProperty("XScale");
 var nodeYScale = nodes[0].findProperty("YScale");
 var nodeZScale = nodes[0].findProperty("ZScale");
 
 // Get the target's transforms.
+
 var targetXTransform = nodes[1].findProperty("XTranslate");
 var targetYTransform = nodes[1].findProperty("YTranslate");
 var targetZTransform = nodes[1].findProperty("ZTranslate");
 
 var targetXRotate = nodes[1].findProperty("XRotate");
 var targetYRotate = nodes[1].findProperty("YRotate");
-var targetZRotate = nodes[1].findProperty("XTranslate");
+var targetZRotate = nodes[1].findProperty("Zrotate");
 
 var targetXScale = nodes[1].findProperty("XScale");
 var targetYScale = nodes[1].findProperty("YScale");
