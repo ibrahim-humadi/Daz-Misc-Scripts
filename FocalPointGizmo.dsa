@@ -1,0 +1,116 @@
+// DAZ Studio version 4.22.0.1 filetype DAZ Script
+
+(function(){
+	cameraToCopy = Scene.getPrimarySelection();
+	var sOrigin = "Object Center";
+	var areaOfPlane = 100;
+	var noOfFaces = 1;
+	
+	setBusyCursor();
+	var planeNode = new DzNode();
+	planeNode.setName( "Plane" );
+	var planeObj = new DzObject();
+	planeObj.name = String("Plane(%1)%2").arg(areaOfPlane).arg(noOfFaces);
+	var planeFacetShape = new DzFacetShape();
+	planeFacetShape.name = "Default";
+	planeFacetShape.setLabel(planeFacetShape.name);
+	var planeFacetMesh = new DzFacetMesh();
+	var planeMat = new DzDefaultMaterial();
+	planeMat.name = "Default";
+	planeMat.setLabel( planeMat.name);
+	planeFacetShape.addMaterial(planeMat);
+	planeFacetMesh.beginEdit();
+	var map = planeFacetMesh.getUVs();
+	planeFacetMesh.activateMaterial(planeMat.name);
+
+	var i, j, idx, numVerts = noOfFaces + 1;
+	var x, z, halfSize = areaOfPlane / 2;
+	var vecUVs = new DzVec3( 0, 0, 0 );
+	planeFacetMesh.preSizeVertexArray( numVerts * numVerts );
+
+	for( i = 0; i < numVerts; i += 1 ){
+		z = i / noOfFaces;
+		vecUVs.y = z;
+		for( j = 0; j < numVerts; j += 1 ){
+			x = j / noOfFaces;
+			vecUVs.x = x;
+			planeFacetMesh.addVertex( x * areaOfPlane - halfSize, 0, halfSize - z * areaOfPlane );
+			map.appendPnt2Vec( vecUVs );
+		}
+	}
+	
+	planeFacetMesh.preSizeFacets( noOfFaces * noOfFaces );	
+	var verts = new Array( 4 );
+	var i = 0;
+	while (i < noOfFaces) {
+		var j = 0;
+		while (j < noOfFaces) {
+			var baseIndex = j + (i * numVerts);
+			var nextRowBaseIndex = baseIndex + numVerts;
+			verts[0] = baseIndex;
+			verts[1] = baseIndex + 1;
+			verts[2] = nextRowBaseIndex + 1;
+			verts[3] = nextRowBaseIndex;
+			planeFacetMesh.addFacet(verts, verts);
+
+			j += 1;
+		}
+		i += 1;
+	}
+	
+	planeFacetMesh.finishEdit();
+	planeFacetShape.setFacetMesh( planeFacetMesh );
+	planeObj.addShape( planeFacetShape );
+	planeNode.setObject( planeObj );
+	
+	var boxLocal = planeNode.getLocalBoundingBox();
+	var vecMax = boxLocal.max;
+	var vecMin = boxLocal.min;
+	
+	if( sOrigin == "Object Center" ){
+		var nMid = (vecMax.y + vecMin.y) * 0.5;
+		
+		var vecOrigin = new DzVec3(0, nMid, 0);
+		planeNode.setOrigin( vecOrigin, true );
+		planeNode.setOrigin( vecOrigin );
+	}
+
+	vecMax.y = 1;
+	var vecEndPoint = new DzVec3( 0, vecMax.y, 0 );
+	planeNode.setEndPoint( vecEndPoint, true );
+	planeNode.setEndPoint( vecEndPoint );
+	
+	var presentation = planeNode.getPresentation();
+	if( !presentation ){
+		presentation = new DzPresentation();
+		planeNode.setPresentation( presentation );
+	}
+
+	presentation.type = "Prop";
+	
+	Scene.addNode( planeNode );
+	cameraToCopy.addNodeChild(planeNode);
+	planeNode.setWSPos(cameraToCopy.getWSPos());	
+	var quart = planeNode.getLocalRot();
+	quart.setValue(0,1.5708);
+	planeNode.setLocalRot(quart);
+	planeNode.setVisibleInSimulation(false);
+	planeNode.setVisibleInRender(false);
+	
+	var helper = DzSceneHelper();
+	var planeZtransProp = helper.findControlProperty("ZTranslate",planeNode,true,true);
+	var planeYtransProp = helper.findControlProperty("YTranslate",planeNode,true,true);
+	var planeXtransProp = helper.findControlProperty("XTranslate",planeNode,true,true);
+
+	// Setting a relationship between plane's Ztranslate and camera's focal dist. x = -x
+	var cameraFocalDistProp = cameraToCopy.findProperty("Depth of Field");	
+	var ercLink = new DzERCLink( DzERCLink.ERCDeltaAdd, cameraFocalDistProp, -1, 0);
+	planeZtransProp.insertController(ercLink);
+
+	// locking plane's controls so user mistakes 
+	planeZtransProp.lock(true);
+	planeYtransProp.lock(true);
+	planeXtransProp.lock(true);
+	
+	clearBusyCursor();
+})();

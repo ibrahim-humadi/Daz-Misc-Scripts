@@ -31,6 +31,8 @@
   - Copies the global render settings Dimensions to the currently selected camera.
 * **CopyRenderSettingsDimensionsToAllCamera.dsa**
   - Copies the global render settings Dimensions to all cameras in the scene.
+* **FocalPointGizmo.dsa**
+  - Select camera and run script. Creates a plane that moves with focal distance. plane can be scaled for better visability.
 
 ## Genesis 9 Bones
 * **ResetTwistOnGen9twistbones.dsa**
