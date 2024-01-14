@@ -1,0 +1,12 @@
+// DAZ Studio version 4.22.0.1 filetype DAZ Script
+
+(function(){
+	var nodes = Scene.getSelectedNodeList();
+	for( i = 0; i < nodes.length; i += 1 ){
+	if (!nodes[i].isRootNode())
+	{
+		var nodeParent = nodes[i].getNodeParent();
+		nodeParent.removeNodeChild(nodes[i],true);
+	}
+}
+})();
