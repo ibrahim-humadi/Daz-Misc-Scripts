@@ -23,6 +23,8 @@
   - Sets the currently selected node's centrePoint to 0,0,0. (Saves doing it manually in the joint editor)
 * **deleteBones.dsa**
   - Deletes currently selected bones.
+* **unParentInPlace.dsa**
+  - Unparents the selected nodes "in place"
 
 ## Camera and Render Settings
 * **CopyCameraDimensionsToRenderSettings.dsa**
