@@ -11,6 +11,8 @@
   - Takes the first selected node and changes its Transform's (XYZ Translate, rotate, and scale) to match the second selected node/figure.
 * **MoveToFocalPoint.dsa**
   - Moves the currently selected node/nodes to the current viewport's focal point.
+* **MoveToFocalPointAndToFloor.dsa**
+  - Moves the currently selected node/nodes to the current viewport's focal point and "Move to floor" them.
 * **GetCurrentCamOrSpotNode.dsa**
   - Selects the currently viewported camera's or spotlight's node.
 * **CopyCameraToPerspective.dsa**
