@@ -1,0 +1,13 @@
+// DAZ Studio version 4.22.0.1 filetype DAZ Script
+(function(){
+    var nodes = Scene.getNodeList();
+    print(nodes.length);
+    for (i = 0; i < nodes.length; i++) {
+    if(nodes[i].isVisible()){
+        nodes[i].setVisible(false);
+        }
+    else{
+        nodes[i].setVisible(true);
+        }
+    };
+})();

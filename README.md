@@ -1,6 +1,16 @@
 ## Scene Management
 * **newScene.dsa**
   - Clears the scene without showing a dialog box (good if you're ad-phobic).
+* **ToggleVisibleScene.dsa**
+  - Hides visible and unhide's non-visible.
+* **hide_selected.dsa**
+  - Hides the selected nodes.
+* **hide_unselected.dsa**
+  - Hides currently unselected nodes.
+* **unhideSelected.dsa**
+  - unhide currently selected nodes.
+* **unhideAll.dsa**
+  - Unhide all nodes.
 
 ## Node Selection and Manipulation
 * **getEnvNode.dsa**

@@ -1,0 +1,45 @@
+// DAZ Studio version 4.21.0.5 filetype DAZ Script
+
+var allNodes = Scene.getNodeList();
+var parentNodes = [];
+var selectedNodes = Scene.getSelectedNodeList();
+
+// Iterate over allNodes
+for (var i = 0; i < allNodes.length; i++) {
+  var node = allNodes[i];
+  var isGroup = false;
+  
+  if (!node.isSelected()) {
+    if (node.inherits("DzSkeleton") || node.inherits("DzGroupNode")) {
+      parentNodes.push(node);
+    }
+  }
+}
+
+// Iterate through parentNodes and check if selectedNodes are children
+for (var x = 0; x < parentNodes.length; x++) {
+  var parentNode = parentNodes[x];
+  for (var j = 0; j < selectedNodes.length; j++) {
+    var selectedNode = selectedNodes[j];
+    if (selectedNode.isNodeDescendantOf(parentNode, true)) {
+      print(parentNode.name + " is a child of " + selectedNode.name);
+      selectedNodes.push(parentNode);
+    }
+  }
+}
+
+// Remove nodes from allNodes that have a matching name with selectedNodes
+allNodes = allNodes.filter(function(node) {
+  return !selectedNodes.some(function(selectedNode) {
+    return selectedNode.name === node.name;
+  });
+});
+
+// Print the remaining nodes in allNodes
+for (var i = 0; i < allNodes.length; i++) {
+  var node = allNodes[i];
+  node.setVisible(false);
+
+  print("Remaining node: " + node.name);
+}
+
