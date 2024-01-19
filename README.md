@@ -3,6 +3,8 @@
   - Clears the scene without showing a dialog box (good if you're ad-phobic).
 * **ToggleVisibleScene.dsa**
   - Hides visible and unhide's non-visible.
+* **hideAll.dsa**
+  - Hides all nodes.
 * **hide_selected.dsa**
   - Hides the selected nodes.
 * **hide_unselected.dsa**
@@ -27,8 +29,6 @@
   - Selects the currently viewported camera's or spotlight's node.
 * **CopyCameraToPerspective.dsa**
   - In the perspective view, select a camera and run the script. The perspective view will match the camera.
-* **hideAll.dsa**
-  - Hides all nodes.
 * **selectChildNodes.dsa**
   - Selects all currently selected child nodes recursively.
 * **setOrigin0.dsa**
