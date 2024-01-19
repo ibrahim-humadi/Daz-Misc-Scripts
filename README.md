@@ -2,7 +2,7 @@
 * **newScene.dsa**
   - Clears the scene without showing a dialog box (good if you're ad-phobic).
 * **ToggleVisibleScene.dsa**
-  - Hides visible and unhide's non-visible.
+  - Hides visible and unhide's non-visible nodes.
 * **hideAll.dsa**
   - Hides all nodes.
 * **hide_selected.dsa**
