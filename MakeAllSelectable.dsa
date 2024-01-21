@@ -1,0 +1,8 @@
+// DAZ Studio version 4.21.0.5 filetype DAZ Script
+
+var allNodes = Scene.getNodeList();
+// Iterate over allNodes
+for (var i = 0; i < allNodes.length; i++) {
+    var node = allNodes[i];
+    node.setSelectable(true);
+}

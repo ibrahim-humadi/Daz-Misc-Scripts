@@ -13,6 +13,10 @@
   - unhide currently selected nodes.
 * **unhideAll.dsa**
   - Unhide all nodes.
+* **MakeUnselectableNonSelected.dsa**
+  - When run this script will make all not-currently-selected nodes unselectable.
+* **MakeAllSelectable.dsa** 
+  - This script will make all nodes selectable.
 
 ## Node Selection and Manipulation
 * **getEnvNode.dsa**
