@@ -1,4 +1,4 @@
-## Scene Management
+## Scene Management // Node Selection and Manipulation
 * **newScene.dsa**
   - Clears the scene without showing a dialog box (good if you're ad-phobic).
 * **ToggleVisibleScene.dsa**
@@ -17,8 +17,8 @@
   - When run this script will make all not-currently-selected nodes unselectable.
 * **MakeAllSelectable.dsa** 
   - This script will make all nodes selectable.
-
-## Node Selection and Manipulation
+* **clearSelection.dsa**
+  - Clears selection. (Deselects selected nodes)
 * **getEnvNode.dsa**
   - Deselects all selected nodes and selects "Environment Options" Node only. (To assign to action later)
 * **selected_reset_translate.dsa**
@@ -41,6 +41,8 @@
   - Deletes currently selected bones.
 * **unParentInPlace.dsa**
   - Unparents the selected nodes "in place"
+* **exportEachFavToObj.dsa**
+  - Exports each favorited morph set to max value individually to a .obj(s). prompts for output directory.
 
 ## Camera and Render Settings
 * **CopyCameraDimensionsToRenderSettings.dsa**
@@ -61,5 +63,3 @@
 ## Callbacks and Selection
 * **clearCallbacks.dsa**
   - Clears all DzCallbacks. (For debugging scripts)
-* **clearSelection.dsa**
-  - Clears selection. (Deselects selected nodes)
