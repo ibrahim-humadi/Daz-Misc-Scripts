@@ -20,7 +20,7 @@
 			settings.setBoolValue( "WriteVT", true );
 			settings.setBoolValue( "WriteVN", true );
 			settings.setBoolValue( "SelectedOnly", true );
-            settings.setBoolValue( "WriteUsemtl", false );    
+			settings.setBoolValue( "WriteUsemtl", false );    
 			settings.setBoolValue( "", false );
 			settings.setBoolValue( "SelectedRootsOnly", true );
 			settings.setIntValue( "RunSilent", 1 );
