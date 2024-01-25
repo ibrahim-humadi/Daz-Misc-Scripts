@@ -6,21 +6,20 @@
 		var shape = object.getCurrentShape();
 		if (shape){
 			var figureSubDLevel = shape.findProperty('SubDIALevel');
-            var figureResolutionLevel = shape.findProperty('lodlevel');
+			var figureResolutionLevel = shape.findProperty('lodlevel');
 			print(figureSubDLevel.getValue());
 		}
 	}
 	
 	if (figureSubDLevel){
 		figureSubDLevel.setValue(0);
-        figureResolutionLevel.setValue(0);
+		shape.getLODControl().setValue(0);
 	}
 
     var exportMgr = App.getExportMgr();
     var exporter = exportMgr.findExporterByClassName("DzObjExporter");
     if( exporter ){
         var settings = new DzFileIOSettings();
-        //oSettings.setStringValue( "Preset", "DAZ Studio (1 unit = 1cm)" );
         settings.setFloatValue( "Scale", 1 );
         settings.setStringValue( "LatAxis", "X" );
         settings.setStringValue( "VertAxis", "Y" );
@@ -34,24 +33,23 @@
         settings.setBoolValue( "WriteVN", false );
         settings.setBoolValue( "WriteF", true );
         settings.setBoolValue( "WriteL", false );
-        settings.setBoolValue( "WriteO", false );
+        settings.setBoolValue( "WriteO", true );
         settings.setBoolValue( "WriteG", false );
         settings.setBoolValue( "PrimaryRootOnly", true );
         settings.setBoolValue( "GroupGeom", true );
         settings.setBoolValue( "NoMaps", true );
         settings.setBoolValue( "OriginalMaps", false );
-        settings.setBoolValue( "IncludeSubD", false );
         settings.setBoolValue( "SelectedRootsOnly", true );
         settings.setBoolValue( "TriangulateNgons", false );
         settings.setBoolValue( "IncludeParented", false );
-        settings.setBoolValue( "WriteUsemtl", false );            
+        settings.setBoolValue( "WriteUsemtl", true );            
         settings.setBoolValue( "SelectedOnly", true );
         settings.setBoolValue( "SelectedRootsOnly", true );
         settings.setBoolValue( "WriteMtllib", false );
         settings.setBoolValue( "CollectMaps", false );
         settings.setBoolValue( "ConvertMaps", false );
-        settings.setBoolValue( "CollapseUVTiles", true );
-        settings.setIntValue( "FloatPrecision", 8 );
+        settings.setBoolValue( "CollapseUVTiles", false );
+        settings.setIntValue( "FloatPrecision", 6 );
         settings.setIntValue( "RunSilent", 1 );
         print( settings.toJsonString() );
         exporter.writeFile( App.getTempPath() + "/myfile.obj", settings );
