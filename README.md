@@ -60,6 +60,6 @@
 * **removeBonesCasc.dsa**
   - Select gen9 char and run script to remove facial bones, A pose figure (Pick Zero if/when prompted) + silent fbx export for import to Cascadeur (below free tier bone limit).
 
-## Callbacks and Selection
+## Callbacks
 * **clearCallbacks.dsa**
   - Clears all DzCallbacks. (For debugging scripts)
