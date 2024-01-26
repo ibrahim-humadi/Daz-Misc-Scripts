@@ -40,9 +40,11 @@
 * **deleteBones.dsa**
   - Deletes currently selected bones.
 * **unParentInPlace.dsa**
-  - Unparents the selected nodes "in place"
+  - Unparents the selected nodes "in place".
 * **exportEachFavToObj.dsa**
   - Exports each favorited morph set to max value individually to a .obj(s). prompts for output directory.
+* **exportBaseResSubD0Obj.dsa**
+  - mimics the fuctionality of daz export at base reolution script. produces .obj of same filesize.
 
 ## Camera and Render Settings
 * **CopyCameraDimensionsToRenderSettings.dsa**
@@ -63,3 +65,7 @@
 ## Callbacks
 * **clearCallbacks.dsa**
   - Clears all DzCallbacks. (For debugging scripts)
+
+## Geometry
+* **createCube.dsa**  
+  - Creates a 1m x 1m x 1m cube.

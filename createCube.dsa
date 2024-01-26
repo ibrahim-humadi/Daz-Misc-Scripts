@@ -1,0 +1,88 @@
+// DAZ Studio version 4.22.0.1 filetype DAZ Script
+
+cameraToCopy = Scene.getPrimarySelection();
+var sOrigin = "Object Center";
+var sizeOfCube = 100;
+
+setBusyCursor();
+var cubeNode = new DzNode();
+cubeNode.setName("Cube");
+var cubeObj = new DzObject();
+cubeObj.name = String("Cube(%1)").arg(sizeOfCube);
+var cubeFacetShape = new DzFacetShape();
+cubeFacetShape.name = "Default";
+cubeFacetShape.setLabel(cubeFacetShape.name);
+var cubeFacetMesh = new DzFacetMesh();
+var cubeMat = new DzDefaultMaterial();
+cubeMat.name = "Default";
+cubeMat.setLabel(cubeMat.name);
+cubeFacetShape.addMaterial(cubeMat);
+cubeFacetMesh.beginEdit();
+var map = cubeFacetMesh.getUVs();
+cubeFacetMesh.activateMaterial(cubeMat.name);
+
+var numVerts = 8;
+var halfSize = sizeOfCube / 2;
+var vecUVs = new DzVec3(0, 0, 0);
+cubeFacetMesh.preSizeVertexArray(numVerts);
+
+var vertices = [
+    new DzVec3(-halfSize, -halfSize, halfSize),
+    new DzVec3(halfSize, -halfSize, halfSize),
+    new DzVec3(halfSize, halfSize, halfSize),
+    new DzVec3(-halfSize, halfSize, halfSize),
+    new DzVec3(-halfSize, -halfSize, -halfSize),
+    new DzVec3(halfSize, -halfSize, -halfSize),
+    new DzVec3(halfSize, halfSize, -halfSize),
+    new DzVec3(-halfSize, halfSize, -halfSize)
+];
+
+for (var i = 0; i < numVerts; i += 1) {
+    var vertex = vertices[i];
+    vecUVs.x = (vertex.x + halfSize) / sizeOfCube;
+	vecUVs.y = (vertex.y + halfSize) / sizeOfCube;
+	vecUVs.z = (vertex.z + halfSize) / sizeOfCube;
+	cubeFacetMesh.addVertex(vertex.x, vertex.y, vertex.z);
+	map.appendPnt2Vec(vecUVs);
+}
+
+cubeFacetMesh.preSizeFacets(12);
+var faces = [
+    [0, 1, 2, 3],
+    [1, 5, 6, 2],
+    [4, 7, 6, 5],
+    [0, 3, 7, 4],
+    [3, 2, 6, 7],
+    [0, 4, 5, 1]
+];
+
+var verts = new Array(4);
+for (var i = 0; i < faces.length; i++) {
+    var face = faces[i];
+    verts[0] = face[0];
+    verts[1] = face[1];
+    verts[2] = face[2];
+    verts[3] = face[3];
+    cubeFacetMesh.addFacet(verts, verts);
+}
+
+cubeFacetMesh.finishEdit();
+cubeFacetShape.setFacetMesh(cubeFacetMesh);
+cubeObj.addShape(cubeFacetShape);
+cubeNode.setObject(cubeObj);
+
+if (sOrigin == "Object Center") {
+    var vecOrigin = new DzVec3(0, 0, 0);
+    cubeNode.setOrigin(vecOrigin, true);
+    cubeNode.setOrigin(vecOrigin);
+}
+
+var presentation = cubeNode.getPresentation();
+if (!presentation) {
+    presentation = new DzPresentation();
+    cubeNode.setPresentation(presentation);
+}
+
+presentation.type = "Prop";
+
+Scene.addNode(cubeNode);
