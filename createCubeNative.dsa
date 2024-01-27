@@ -1,0 +1,7 @@
+// DAZ Studio version 4.22.0.1 filetype DAZ Script
+
+(function(){
+	var settings = DzSettings();
+	Geometry.getDefaultPrimitiveOptions(Geometry.Cube,settings);
+	var cube = Geometry.createPrimitive(settings);
+})();

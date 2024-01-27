@@ -69,3 +69,5 @@
 ## Geometry
 * **createCube.dsa**  
   - Creates a 1m x 1m x 1m cube.
+* **createCubeNative.dsa**
+  - Uses built in Daz Geometry class to create a cube.
