@@ -1,8 +1,6 @@
 // DAZ Studio version 4.22.0.15 filetype DAZ Script
 
 var cameras = Scene.getCameraList();
-print(cameras.length);
-var helper = DzSceneHelper();
 
 for( i = 0; i < cameras.length; i += 1 ){
 	dispPerspParam = cameras[i].findProperty('Display Persistence');
