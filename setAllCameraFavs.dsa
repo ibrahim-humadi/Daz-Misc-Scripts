@@ -1,0 +1,20 @@
+// DAZ Studio version 4.22.0.15 filetype DAZ Script
+
+var cameras = Scene.getCameraList();
+print(cameras.length);
+var helper = DzSceneHelper();
+
+for( i = 0; i < cameras.length; i += 1 ){
+	dispPerspParam = cameras[i].findProperty('Display Persistence');
+	dispPerspParam.setIsFavorite(true);
+	nearDofParam = cameras[i].findProperty('Near DOF Plane Visibility');
+	nearDofParam.setIsFavorite(true);
+	farDofParam = cameras[i].findProperty('Far DOF Plane Visibility');
+	farDofParam.setIsFavorite(true);
+	dofBoolParam = cameras[i].findProperty('DOF');
+	dofBoolParam.setIsFavorite(true);
+	focalDistParam = cameras[i].findProperty('Depth of Field');
+	focalDistParam.setIsFavorite(true);
+	focalDistParam = cameras[i].findProperty('Aperature');
+	focalDistParam.setIsFavorite(true);
+}
