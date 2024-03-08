@@ -1,0 +1,29 @@
+// DAZ Studio version 4.22.0.15 filetype DAZ Script
+
+var lights = Scene.getLightList();
+
+for( i = 0; i < lights.length; i += 1 ){
+	dispPerspParam = lights[i].findProperty('Display Persistence');
+	dispPerspParam.setIsFavorite(true);
+	colourParam = lights[i].findProperty('Color');
+	colourParam.setIsFavorite(true);
+	spreadAngParam = lights[i].findProperty('Spread Angle');
+	spreadAngParam.setIsFavorite(true);
+	lightGeomParam = lights[i].findProperty('Light Geometry');
+	lightGeomParam.setIsFavorite(true);
+	heightParam = lights[i].findProperty('Height');
+	heightParam.setIsFavorite(true);
+	widthParam = lights[i].findProperty('Width');
+	widthParam.setIsFavorite(true);
+	renderEmitParam = lights[i].findProperty('Render Emitter');
+	renderEmitParam.setIsFavorite(true);
+	lumFluxParam = lights[i].findProperty('Flux');
+	lumFluxParam.setIsFavorite(true);
+	tempParam = lights[i].findProperty('Temperature');
+	tempParam.setIsFavorite(true);
+
+
+	
+	
+	
+}
