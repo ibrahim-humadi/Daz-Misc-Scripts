@@ -1,7 +1,6 @@
 // DAZ Studio version 4.22.0.15 filetype DAZ Script
 
 var lights = Scene.getLightList();
-
 for( i = 0; i < lights.length; i += 1 ){
 	dispPerspParam = lights[i].findProperty('Display Persistence');
 	dispPerspParam.setIsFavorite(true);
@@ -20,10 +19,5 @@ for( i = 0; i < lights.length; i += 1 ){
 	lumFluxParam = lights[i].findProperty('Flux');
 	lumFluxParam.setIsFavorite(true);
 	tempParam = lights[i].findProperty('Temperature');
-	tempParam.setIsFavorite(true);
-
-
-	
-	
-	
+	tempParam.setIsFavorite(true);	
 }
