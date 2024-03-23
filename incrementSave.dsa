@@ -1,0 +1,28 @@
+// DAZ Studio version 4.22.0.15 filetype DAZ Script
+
+function incrementFilenameNumber(filename) {
+    var match = filename.match(/(\d+)$/); 
+    if (match) {
+        var number = parseInt(match[1], 10); 
+        var incrementedNumber = number + 1; 
+        var formattedNumber = String(incrementedNumber);
+
+        while (formattedNumber.length < match[1].length) {
+            formattedNumber = '0' + formattedNumber;
+        }
+
+        return filename.replace(/\d+$/, formattedNumber);
+    }
+    return filename;
+}
+
+var path = Scene.getFilename();
+var lastIndex = path.lastIndexOf('/');
+var directoryPath = path.substring(0, lastIndex + 1);
+var filenameWithExtension = path.substring(lastIndex + 1);
+var dotIndex = filenameWithExtension.lastIndexOf('.');
+var filenameWithoutExtension = filenameWithExtension.substring(0, dotIndex);
+var extension = filenameWithExtension.substring(dotIndex);
+var incrementedFilename = incrementFilenameNumber(filenameWithoutExtension);
+var newFullPath = directoryPath + incrementedFilename + extension;
+Scene.saveScene(newFullPath);

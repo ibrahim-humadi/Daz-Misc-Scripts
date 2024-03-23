@@ -1,6 +1,8 @@
 ## Scene Management // Node Selection and Manipulation
 * **newScene.dsa**
   - Clears the scene without showing a dialog box (good if you're ad-phobic).
+* **incrementSave.dsa**
+  - increments the current filename and saves if it ends with a number, otherwise adds a 1 to filename and saves.
 * **ToggleVisibleScene.dsa**
   - Hides visible and unhide's non-visible nodes.
 * **hideAll.dsa**
