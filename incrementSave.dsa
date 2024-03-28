@@ -16,6 +16,7 @@ function incrementFilenameNumber(filename) {
     return filename;
 }
 
+var contentMgr = App.getContentMgr();
 var path = Scene.getFilename();
 var lastIndex = path.lastIndexOf('/');
 var directoryPath = path.substring(0, lastIndex + 1);
@@ -26,3 +27,5 @@ var extension = filenameWithExtension.substring(dotIndex);
 var incrementedFilename = incrementFilenameNumber(filenameWithoutExtension);
 var newFullPath = directoryPath + incrementedFilename + extension;
 Scene.saveScene(newFullPath);
+contentMgr.fileCreated(newFullPath);
+contentMgr.addRecentFile(newFullPath);
