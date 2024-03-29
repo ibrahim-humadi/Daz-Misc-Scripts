@@ -41,9 +41,8 @@
         { 
             if(prop.currentValueIsDefaultValue())
             {
-                print(prop.getLabel());
                 prop.setValue(prop.getMax());
-                exportSelected(path,prop.getLabel());
+                exportSelected(path,prop.name);
                 prop.reset(DzProperty.ResetDefault);
             }
             else
