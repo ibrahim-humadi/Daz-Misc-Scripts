@@ -2,6 +2,10 @@
 
 (function(){
 
+	// EDIT ME // by default we export to max values. To export to a specific value uncomment line 7 and set to whatever number.
+	var userSetting = "max";
+	//var userSetting = 1;
+
     function exportSelected(path, morphName)
 	{
 		var exportMgr = App.getExportMgr();
@@ -41,7 +45,12 @@
         { 
             if(prop.currentValueIsDefaultValue())
             {
-                prop.setValue(prop.getMax());
+				if(userSetting == "max") {
+					prop.setValue(prop.getMax());
+				}
+				else {
+					prop.setValue(userSetting);
+				}            
                 exportSelected(path,prop.name);
                 prop.reset(DzProperty.ResetDefault);
             }
@@ -64,7 +73,12 @@
 	        {
 	        	if(prop.currentValueIsDefaultValue())
                 {                   
-                    prop.setValue(prop.getMax());
+                    if(userSetting == "max") {
+						prop.setValue(prop.getMax());
+					}
+					else {
+						prop.setValue(userSetting);
+					}
                     exportSelected(path,mod.name);
                     prop.reset(DzProperty.ResetDefault);
                 }
