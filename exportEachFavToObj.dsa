@@ -64,10 +64,9 @@
 			if(prop.isFavorite())
 	        {
 	        	if(prop.currentValueIsDefaultValue())
-                {
-                    print(prop.getLabel());
+                {                   
                     prop.setValue(prop.getMax());
-                    exportSelected(path,prop.getLabel());
+                    exportSelected(path,mod.name);
                     prop.reset(DzProperty.ResetDefault);
                 }
             else
