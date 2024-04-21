@@ -1,0 +1,33 @@
+// DAZ Studio version 4.22.0.1 filetype DAZ Script
+
+(function(){
+    // Change these two values as needed
+    var maxWiggleInDegrees = 10;
+    var minWiggleInDegrees = -5;
+
+    function getRandomRotationInRange(minDegrees, maxDegrees) {
+        // Convert degrees to radians
+        var minRadians = minDegrees * (Math.PI / 180);
+        var maxRadians = maxDegrees * (Math.PI / 180);
+        var randomOffset = (Math.random() * (maxRadians - minRadians)) + minRadians;
+
+        return randomOffset * (180 / Math.PI);
+    }
+
+    var selectedNodes = Scene.getSelectedNodeList();
+    beginUndo();
+
+    for (var i = 0; i < selectedNodes.length; i++) {
+        var rot = selectedNodes[i].getWSRot();
+
+        var randomOffsetX = getRandomRotationInRange(minWiggleInDegrees, maxWiggleInDegrees);
+        var randomOffsetY = getRandomRotationInRange(minWiggleInDegrees, maxWiggleInDegrees);
+        var randomOffsetZ = getRandomRotationInRange(minWiggleInDegrees, maxWiggleInDegrees);
+        var newX = rot.x + randomOffsetX;
+        var newY = rot.y + randomOffsetY;
+        var newZ = rot.z + randomOffsetZ;
+        var newRot = new DzQuat(newX, newY, newZ, rot.w,true);
+        selectedNodes[i].setWSRot(newRot);
+    }
+    acceptUndo("Wiggled " + selectedNodes.length + " nodes");
+})();
