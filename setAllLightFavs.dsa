@@ -7,7 +7,9 @@ for( i = 0; i < lights.length; i += 1 ){
 	colourParam = lights[i].findProperty('Color');
 	colourParam.setIsFavorite(true);
 	spreadAngParam = lights[i].findProperty('Spread Angle');
-	spreadAngParam.setIsFavorite(true);
+	if (spreadAngParam){
+		spreadAngParam.setIsFavorite(true);
+	}
 	lightGeomParam = lights[i].findProperty('Light Geometry');
 	lightGeomParam.setIsFavorite(true);
 	heightParam = lights[i].findProperty('Height');
