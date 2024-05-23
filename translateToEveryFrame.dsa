@@ -1,0 +1,20 @@
+// DAZ Studio version 4.22.0.16 filetype DAZ Script
+
+var playRange = Scene.getPlayRange();
+var SceneDur = playRange.getDuration();
+var SceneTimeStep = Scene.getTimeStep().valueOf();
+
+var numOfFrames = SceneDur / SceneTimeStep;
+
+var node = Scene.getPrimarySelection();
+var nodePos = node.getWSPos(0,false);
+var nodeRot = node.getWSRot(0,false);
+
+for (var i = 0; i <= numOfFrames; i++) {
+	var frameNum = SceneTimeStep * i;	
+	node.setWSPos(frameNum,nodePos);
+	node.setWSRot(frameNum, nodeRot);
+	//node.setLocalPos(frameNum, nodeLocPos);
+	Scene.update();
+
+}
