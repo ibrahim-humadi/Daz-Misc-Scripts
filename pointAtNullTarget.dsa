@@ -1,0 +1,34 @@
+// DAZ Studio version 4.22.0.16 filetype DAZ Script
+
+(function(){
+var selectedNode = Scene.getPrimarySelection();
+
+var eyeLeft = selectedNode.findNodeChild("l_eye",true);
+var eyeRight = selectedNode.findNodeChild("r_eye",true);
+
+if (eyeLeft && eyeRight){
+	print("foundEyes");
+	var searchString = selectedNode.getLabel() + " Null";
+	var nullNode = 	selectedNode.findNodeChildByLabel(searchString,true);
+	print(nullNode);
+	if (nullNode)
+	{
+		eyeLeft.setPointAtTarget(nullNode);
+		eyeRight.setPointAtTarget(nullNode);
+		selectedNode.select(false);
+		nullNode.select(true);
+	}
+	else{
+		var newPointAtTarget = new DzNode();
+		newPointAtTarget.setName(selectedNode.getLabel() + " Null");
+		newPointAtTarget.setLabel(selectedNode.getLabel() + " Null");
+		Scene.addNode(newPointAtTarget);
+		selectedNode.addNodeChild(newPointAtTarget);
+		eyeLeft.setPointAtTarget(newPointAtTarget);
+		eyeRight.setPointAtTarget(newPointAtTarget);
+		selectedNode.select(false);
+		newPointAtTarget.select(true);
+	}
+}
+})();
+
