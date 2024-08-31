@@ -47,6 +47,8 @@
   - Exports each favorited morph set to max value individually to a .obj(s). prompts for output directory.
 * **exportBaseResSubD0Obj.dsa**
   - mimics the fuctionality of daz export at base reolution script. produces .obj of same filesize.
+* **lookAtNullTarget.dsa**
+  - select g9 figure and run, creates a child null and points eyes at it, if null already exsists toggles eyes point at.
 
 ## Camera and Render Settings
 * **CopyCameraDimensionsToRenderSettings.dsa**
