@@ -2,7 +2,7 @@
 
 (function(){
 
-	function exportSelected(path, morphName)
+	function exportSelected(path, groupName)
 	{
 		var exportMgr = App.getExportMgr();
 		var exporter = exportMgr.findExporterByClassName("DzObjExporter");
@@ -24,7 +24,7 @@
 			settings.setBoolValue( "", false );
 			settings.setBoolValue( "SelectedRootsOnly", true );
 			settings.setIntValue( "RunSilent", 1 );
-			exporter.writeFile( path + "/" + morphName +".obj", settings );
+			exporter.writeFile( path + "/" + groupName + ".obj", settings );
 		}
 	};
 
@@ -34,70 +34,147 @@
 		return;
 	}
 	var path = filePath.substring(0, filePath.lastIndexOf("/"));
-	var morphList = [];
 	var file = new DzFile(filePath);
+	var figure = Scene.getPrimarySelection();
+	var propCount = figure.getNumProperties();
+	var object = figure.getObject();
+	var noMods = object.getNumModifiers();
+
 	if (file.open(DzFile.ReadOnly)) {
+		var groupName = "";
+		var morphList = [];
 		while (!file.eof()) {
 			var line = file.readLine().trim();
-			if (line) {
+
+			if (line.startsWith("//")) {
+				if (groupName && morphList.length > 0) {
+					for (var i = 0; i < morphList.length; i++) {
+						var morph = morphList[i];
+						var morphName = morph.name;
+						var value = morph.value;
+						var found = false;
+
+						for (var j = 0; j < propCount; j++) {
+							var prop = figure.getProperty(j);
+							if (prop.name === morphName) {
+								prop.setValue(value === "max" ? prop.getMax() : parseFloat(value));
+								found = true;
+								break;
+							}
+						}
+
+						if (!found) {
+							for (var k = 0; k < noMods; k++) {
+								var mod = object.getModifier(k);
+								if (mod.className() === "DzMorph" && mod.name === morphName) {
+									var modProp = mod.getValueControl();
+									modProp.setValue(value === "max" ? modProp.getMax() : parseFloat(value));
+									found = true;
+									break;
+								}
+							}
+						}
+
+						if (!found) {
+							print("Morph '" + morphName + "' not found on the figure.");
+						}
+					}
+
+					exportSelected(path, groupName);
+
+					for (var i = 0; i < morphList.length; i++) {
+						var morph = morphList[i];
+						var morphName = morph.name;
+						for (var j = 0; j < propCount; j++) {
+							var prop = figure.getProperty(j);
+							if (prop.name === morphName) {
+								prop.reset(DzProperty.ResetDefault);
+								break;
+							}
+						}
+
+						for (var k = 0; k < noMods; k++) {
+							var mod = object.getModifier(k);
+							if (mod.className() === "DzMorph" && mod.name === morphName) {
+								var modProp = mod.getValueControl();
+								modProp.reset(DzProperty.ResetDefault);
+								break;
+							}
+						}
+					}
+
+					morphList = [];
+				}
+				groupName = line.replace("//", "").trim();
+			} else if (line) {
 				var parts = line.split("//");
 				var morphName = parts[0].trim();
 				var value = parts[1].trim();
 				morphList.push({ name: morphName, value: value });
 			}
 		}
+
+		if (groupName && morphList.length > 0) {
+			for (var i = 0; i < morphList.length; i++) {
+				var morph = morphList[i];
+				var morphName = morph.name;
+				var value = morph.value;
+				var found = false;
+
+				for (var j = 0; j < propCount; j++) {
+					var prop = figure.getProperty(j);
+					if (prop.name === morphName) {
+						prop.setValue(value === "max" ? prop.getMax() : parseFloat(value));
+						found = true;
+						break;
+					}
+				}
+
+				if (!found) {
+					for (var k = 0; k < noMods; k++) {
+						var mod = object.getModifier(k);
+						if (mod.className() === "DzMorph" && mod.name === morphName) {
+							var modProp = mod.getValueControl();
+							modProp.setValue(value === "max" ? modProp.getMax() : parseFloat(value));
+							found = true;
+							break;
+						}
+					}
+				}
+
+				if (!found) {
+					print("Morph '" + morphName + "' not found on the figure.");
+				}
+			}
+
+			exportSelected(path, groupName);
+
+			for (var i = 0; i < morphList.length; i++) {
+				var morph = morphList[i];
+				var morphName = morph.name;
+				for (var j = 0; j < propCount; j++) {
+					var prop = figure.getProperty(j);
+					if (prop.name === morphName) {
+						prop.reset(DzProperty.ResetDefault);
+						break;
+					}
+				}
+
+				for (var k = 0; k < noMods; k++) {
+					var mod = object.getModifier(k);
+					if (mod.className() === "DzMorph" && mod.name === morphName) {
+						var modProp = mod.getValueControl();
+						modProp.reset(DzProperty.ResetDefault);
+						break;
+					}
+				}
+			}
+		}
+
 		file.close();
 	} else {
 		MessageBox.critical("Could not open morphList.txt.");
 		return;
-	}
-
-	var figure = Scene.getPrimarySelection();
-	var propCount = figure.getNumProperties();
-	var object = figure.getObject();
-	var noMods = object.getNumModifiers();
-
-	for (var i = 0; i < morphList.length; i++) {
-		var morphName = morphList[i].name;
-		var value = morphList[i].value;
-		var found = false;
-
-		for (var j = 0; j < propCount; j++) {
-			var prop = figure.getProperty(j);
-			if (prop.name === morphName) {
-				if (value === "max") {
-					prop.setValue(prop.getMax());
-				} else {
-					prop.setValue(parseFloat(value));
-				}
-				exportSelected(path, morphName);
-				prop.reset(DzProperty.ResetDefault);
-				found = true;
-				break;
-			}
-		}
-
-		if (!found) {
-			for (var k = 0; k < noMods; k++) {
-				var mod = object.getModifier(k);
-				if (mod.className() === "DzMorph" && mod.name === morphName) {
-					var modProp = mod.getValueControl();
-					if (value === "max") {
-						modProp.setValue(modProp.getMax());
-					} else {
-						modProp.setValue(parseFloat(value));
-					}
-					exportSelected(path, morphName);
-					modProp.reset(DzProperty.ResetDefault);
-					found = true;
-					break;
-				}
-			}
-		}
-
-		if (!found) {
-			print("Morph '" + morphName + "' not found on the figure.");
-		}
 	}
 	
 })();
