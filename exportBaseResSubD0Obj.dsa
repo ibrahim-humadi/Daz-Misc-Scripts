@@ -28,8 +28,8 @@
         settings.setBoolValue( "InvertVert", false );
         settings.setBoolValue( "InvertDepth", false );
         settings.setBoolValue( "IgnoreInvisible", true );
-        settings.setBoolValue( "RemoveUnusedVerts", true );
-        settings.setBoolValue( "WriteVT", false );
+        settings.setBoolValue( "RemoveUnusedVerts", false );
+        settings.setBoolValue( "WriteVT", true );
         settings.setBoolValue( "WriteVN", false );
         settings.setBoolValue( "WriteF", true );
         settings.setBoolValue( "WriteL", false );
@@ -49,9 +49,10 @@
         settings.setBoolValue( "CollectMaps", false );
         settings.setBoolValue( "ConvertMaps", false );
         settings.setBoolValue( "CollapseUVTiles", false );
-        settings.setIntValue( "FloatPrecision", 6 );
+        settings.setIntValue( "FloatPrecision", 8 );
         settings.setIntValue( "RunSilent", 1 );
         print( settings.toJsonString() );
         exporter.writeFile( App.getTempPath() + "/myfile.obj", settings );
+        print(App.getTempPath() + "/myfile.obj");
     }
 })();

@@ -1,0 +1,101 @@
+// DAZ Studio version 4.22.0.1 filetype DAZ Script
+
+(function(){
+
+	var userSetting = "max";
+
+	function exportSelected(path, morphName)
+	{
+		var exportMgr = App.getExportMgr();
+		var exporter = exportMgr.findExporterByClassName("DzObjExporter");
+		if( exporter ){
+			var settings = new DzFileIOSettings();
+			settings.setFloatValue( "Scale", 1 );
+			settings.setStringValue( "LatAxis", "X" );
+			settings.setStringValue( "VertAxis", "Y" );
+			settings.setStringValue( "DepthAxis", "Z" );
+			settings.setBoolValue( "InvertLat", false );
+			settings.setBoolValue( "InvertVert", false );
+			settings.setBoolValue( "InvertDepth", false );
+			settings.setBoolValue( "IgnoreInvisible", true );
+			settings.setBoolValue( "RemoveUnusedVerts", false );
+			settings.setBoolValue( "WriteVT", true );
+			settings.setBoolValue( "WriteVN", true );
+			settings.setBoolValue( "SelectedOnly", true );
+			settings.setBoolValue( "WriteUsemtl", false );    
+			settings.setBoolValue( "", false );
+			settings.setBoolValue( "SelectedRootsOnly", true );
+			settings.setIntValue( "RunSilent", 1 );
+			exporter.writeFile( path + "/" + morphName +".obj", settings );
+		}
+	};
+
+	var filePath = FileDialog.doFileDialog(qsTr("Please select your morphList.txt"), "*.txt");
+	if (!filePath) {
+		MessageBox.warning("File selection cancelled.");
+		return;
+	}
+	var path = filePath.substring(0, filePath.lastIndexOf("/"));
+	var morphList = [];
+	var file = new DzFile(filePath);
+	if (file.open(DzFile.ReadOnly)) {
+		while (!file.eof()) {
+			var line = file.readLine().trim();
+			if (line) {
+				morphList.push(line);
+			}
+		}
+		file.close();
+	} else {
+		MessageBox.critical("Could not open morphList.txt.");
+		return;
+	}
+
+	var figure = Scene.getPrimarySelection();
+	var propCount = figure.getNumProperties();
+	var object = figure.getObject();
+	var noMods = object.getNumModifiers();
+
+	for (var i = 0; i < morphList.length; i++) {
+		var morphName = morphList[i];
+		var found = false;
+
+		for (var j = 0; j < propCount; j++) {
+			var prop = figure.getProperty(j);
+			if (prop.name === morphName) {
+				if (userSetting === "max") {
+					prop.setValue(prop.getMax());
+				} else {
+					prop.setValue(userSetting);
+				}
+				exportSelected(path, morphName);
+				prop.reset(DzProperty.ResetDefault);
+				found = true;
+				break;
+			}
+		}
+
+		if (!found) {
+			for (var k = 0; k < noMods; k++) {
+				var mod = object.getModifier(k);
+				if (mod.className() === "DzMorph" && mod.name === morphName) {
+					var modProp = mod.getValueControl();
+					if (userSetting === "max") {
+						modProp.setValue(modProp.getMax());
+					} else {
+						modProp.setValue(userSetting);
+					}
+					exportSelected(path, morphName);
+					modProp.reset(DzProperty.ResetDefault);
+					found = true;
+					break;
+				}
+			}
+		}
+
+		if (!found) {
+			print("Morph '" + morphName + "' not found on the figure.");
+		}
+	}
+	
+})();
