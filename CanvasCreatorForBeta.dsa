@@ -1,0 +1,329 @@
+// DAZ Studio version 4.21.0.5 filetype DAZ Script
+
+(function(){
+    var combHairAlphas = false;
+    var combAnatAlphas = false;
+    var splitHairAlphas = false;
+    var splitAnatAlphas = false;
+    var beautWithA = false;
+
+    function FindHairInChildren(parentNode)
+    {
+        var hairList = [];
+        var keywords = [/[Hh]air/,/[Bb]rows?/,/[Ll]ashes/,/[Vv]ellus/,/[Bb]eard/,/[Mm]o?ustache/,/[Gg]oatee/,/[Ss]calp/];
+        for( j = 0; j < parentNode.figureNodes.length; j += 1 ){
+            node = parentNode.figureNodes[j];
+            for ( x = 0; x < keywords.length; x += 1 ){
+                var regEx = keywords[x];
+                if (node.getLabel().search(regEx) != -1)
+                {
+                    hairList.push(node);
+                }
+            }
+        }
+        return hairList;
+    }
+
+    function FindAnatInChildren(parentNode)
+    {
+        var anatomyList = [];
+        for( k = 0; k < parentNode.figureNodes.length; k += 1 ){
+            node = parentNode.figureNodes[k];
+            var tearsRegEx = /Genesis 9 [Tt]ears?/;
+            if (node.getLabel().search(tearsRegEx) != -1)
+            {
+                anatomyList.push(node);
+            }
+            var eyeRegEx = /\bGenesis 9 [Ee]yes?\b/;
+            if (node.getLabel().search(eyeRegEx) != -1)
+            {
+                anatomyList.push(node);
+            }
+            var mouthRegEx = /Genesis 9 [Mm]outh/;
+            if (node.getLabel().search(mouthRegEx) != -1)
+            {
+                anatomyList.push(node);
+            }
+        }
+        return anatomyList;
+    }
+
+    function getFigures(nodes)
+    {
+        figures = []
+        for( j = 0; j < nodes.length; j += 1 ){
+            node = nodes[j];
+            if (node.name == "Genesis9")
+            {
+                figures.push(node);
+            }
+            if (node.name == "Genesis8_1Female")
+            {
+                figures.push(node);
+            }
+            if (node.name == "Genesis8_1Male")
+            {
+                figures.push(node);
+            }
+            if (node.name == "Genesis8Female")
+            {
+                figures.push(node);
+            }
+            if (node.name == "Genesis8Male")
+            {
+                figures.push(node);
+            }
+        }
+        return figures;
+    }
+
+    function CreateSingleCanvas(mapName, mapType)
+    {
+        var renderMgr = App.getRenderMgr();
+		var activeRenderer = renderMgr.getActiveRenderer();
+		var renderElements = renderMgr.getRenderElementObjects();
+		var irayRenderOpts = renderElements[1];
+		irayRenderOpts.renderToCanvases = true;
+		var canvasDef = irayRenderOpts.findCanvasDefinition(mapName, true);
+		canvasDef.canvasType = mapType;
+    }
+    function ClearCanvases()
+    {
+        var renderMgr = App.getRenderMgr();
+		var activeRenderer = renderMgr.getActiveRenderer();
+		var renderElements = renderMgr.getRenderElementObjects();
+		var irayRenderOpts = renderElements[1];
+        irayRenderOpts.clearCanvasDefinitions();
+        irayRenderOpts.clearNodeLists();
+        irayRenderOpts.renderToCanvases = false;
+    }
+    
+	function CreateAlphaCanvases(canvasName, nodes)
+	{
+		var renderMgr = App.getRenderMgr();
+		var activeRenderer = renderMgr.getActiveRenderer();
+		var renderElements = renderMgr.getRenderElementObjects();
+		var irayRenderOpts = renderElements[1];
+		irayRenderOpts.renderToCanvases = true;
+		var canvasDef = irayRenderOpts.findCanvasDefinition(canvasName + " Alpha", true);
+        if (beautWithA)
+        {
+            canvasDef.canvasType = 0;
+		    canvasDef.hasAlpha = true;
+        }
+        else
+        {
+            canvasDef.canvasType = 9;
+        }
+		irayRenderOpts.beginEdit();
+		irayRenderOpts.setNodeListNodes(canvasName,nodes);
+		irayRenderOpts.update();
+		irayRenderOpts.finishEdit();
+		canvasDef.nodeListName = canvasName;
+		canvasDef.nodeListNameChanged();
+	}
+
+	function CreateFigureAlphas()
+	{
+		var charList = Scene.getSkeletonList(true);
+		var nodesToAdd = [];
+
+        var figures = getFigures(charList);
+		for( i = 0; i < figures.length; i += 1 ){
+			figure = figures[i];		
+            figure.figureName = figure.getLabel();
+            figureChildren = figure.getNodeChildren(true);
+            figureChildren.push(figure);
+            figure.figureNodes = figureChildren;
+            nodesToAdd.push(figure);
+		}
+		
+		for( i = 0; i < nodesToAdd.length; i += 1 ){
+			var figure = nodesToAdd[i];
+            
+            // figures silohette
+			CreateAlphaCanvases(figure.figureName, figure.figureNodes);
+
+            // get figures hair
+            var hairList = FindHairInChildren(figure);
+            
+            if (splitHairAlphas)
+            {
+                for( x = 0; x < hairList.length; x += 1 ){
+                    tempHair = [];
+                   hair = hairList[x];
+                   tempHair.push(hair)
+                   CreateAlphaCanvases(figure.figureName + " - " + hair.getLabel(),tempHair);
+               }
+            }
+            // get combined hairmap
+            if (combHairAlphas)
+            {
+                CreateAlphaCanvases(figure.figureName + " - Combined Hair",hairList);
+            }
+
+            // get anatomy stuff
+            var anatomyList = FindAnatInChildren(figure);
+
+            if (splitAnatAlphas)
+            {
+                for( y = 0; y < anatomyList.length; y += 1 ){
+                    tempAnat = [];
+                   anat = anatomyList[y];
+                   tempAnat.push(anat)
+                   CreateAlphaCanvases(figure.figureName + " - " + anat.getLabel(),tempAnat);
+               }
+            }
+            
+            if (combAnatAlphas)
+            {
+                if (figure.name == "Genesis9")
+                {
+                    CreateAlphaCanvases(figure.figureName + " - Combined Anatomy",anatomyList);
+                }
+            }
+		}
+	}
+
+    var style = App.getStyle();
+    var btnHeight = style.pixelMetric("DZ_ButtonHeight");
+    var dialog = new DzBasicDialog();
+    var wgtDialog = dialog.getWidget();
+    wgtDialog.objectName = "test thing dialog";
+    dialog.caption = "Canvas Creator";
+    dialog.setFixedHeight(260);
+    dialog.setFixedWidth(200);
+    dialog.orientation = DzWidget.Vertical;
+    dialog.AlignmentFlags = DzWidget.AlignCenter;
+
+    var wLyt = new DzVBoxLayout( dialog );
+    //DzVBoxLayout.addSpacing(200);
+    wLyt.autoAdd = true;
+    dialog.insertLayout(0,wLyt,50);
+    
+    // Create a group box for the options
+    var wOptGB = new DzVGroupBox( dialog );
+    wOptGB.setFixedHeight(260);
+    wOptGB.setFixedWidth(200);
+    //wOptGB.insideSpacing = 10;
+    wOptGB.columns = 1;
+    
+    // Create the options
+    var alphaBtn = new DzCheckBox( wOptGB );
+    alphaBtn.setFixedHeight(btnHeight);
+    alphaBtn.text = "Alpha Canvases per Fig";
+    alphaBtn.checked = true;
+
+    var beautWithABtn= new DzCheckBox( wOptGB );
+    beautWithABtn.setFixedHeight(btnHeight);
+    beautWithABtn.text = "Use Beauty with Alphas?";
+    beautWithABtn.checked = false;
+
+    var alphaList = new DzListView(wOptGB);
+    alphaList.addColumn("Maps:");
+    alphaList.setFixedHeight = 10;
+    print(alphaList.columns);
+
+    var combHairChkBox = new DzCheckListItem(alphaList,DzCheckListItem.CheckBox);
+    combHairChkBox.setText(0,"Hair Combined");
+    combHairChkBox.on = true;
+
+    var combAnatChkBox = new DzCheckListItem(alphaList,DzCheckListItem.CheckBox);
+    combAnatChkBox.setText(0,"Anatomy Combined");
+    combAnatChkBox.on = true;
+
+    var sepHairChkBox = new DzCheckListItem(alphaList,DzCheckListItem.CheckBox);
+    sepHairChkBox.setText(0,"Hair Seperate");
+
+    var sepAnatChkBox = new DzCheckListItem(alphaList,DzCheckListItem.CheckBox);
+    sepAnatChkBox.setText(0,"Anatomy Seperate");
+    alphaList.sort ();
+
+    var albBtn = new DzCheckBox( wOptGB );
+    albBtn.setFixedHeight(btnHeight);
+    albBtn.text = "Albedo map";
+
+    var nrmlBtn = new DzCheckBox( wOptGB );
+    nrmlBtn.setFixedHeight(btnHeight);
+    nrmlBtn.text = "Normal map";
+
+    var depthBtn = new DzCheckBox( wOptGB );
+    depthBtn.setFixedHeight(btnHeight);
+    depthBtn.text = "Depth map";
+
+    var matIDBtn = new DzCheckBox( wOptGB );
+    matIDBtn.setFixedHeight(btnHeight);
+    matIDBtn.text = "MatID map";
+
+    var specBtn = new DzCheckBox( wOptGB );
+    specBtn.setFixedHeight(btnHeight);
+    specBtn.text = "Specular map";
+
+    var emisBtn = new DzCheckBox( wOptGB );
+    emisBtn.setFixedHeight(btnHeight);
+    emisBtn.text = "Emission map";
+
+    var clearCanBtn = new DzPushButton(wOptGB);
+    clearCanBtn.text = "Clear Canvases";
+    clearCanBtn.clicked.connect(wOptGB,ClearCanvases);   
+    dialog.showCancelButton(false);
+    dialog.showAcceptButton(false);
+
+    var acceptBtn = new DzPushButton(wOptGB);
+    acceptBtn.text = "Accept";
+
+    dialog.setAcceptButton(acceptBtn);
+
+    if (dialog.exec())
+    {
+        CreateSingleCanvas("Scene",0);
+        if (alphaBtn.checked)
+        {
+			if (beautWithABtn.checked)
+			{
+				beautWithA = true;
+			}        	        	
+            if(combHairChkBox.on)
+            {
+                combHairAlphas = true;
+            }
+            if(sepHairChkBox.on)
+            {
+                splitHairAlphas = true;
+            }
+            if(combAnatChkBox.on)
+            {
+                combAnatAlphas = true;
+            }
+            if(sepAnatChkBox.on)
+            {
+                splitAnatAlphas = true;
+            }
+        CreateFigureAlphas();
+        }
+        if (albBtn.clicked)
+        {
+            CreateSingleCanvas("Scene Albedo",19);
+        }
+        if (nrmlBtn.checked)
+        {
+            CreateSingleCanvas("Scene Normal",17);
+        }
+        if(depthBtn.checked)
+        {
+            CreateSingleCanvas("Scene Depth",13);
+        }
+        if(matIDBtn.checked)
+        {
+            CreateSingleCanvas("MatIDs",15);
+        }
+        if(specBtn.checked)
+        {
+            CreateSingleCanvas("Specular",2);
+        }
+        if(emisBtn.checked)
+        {
+            CreateSingleCanvas("Emission",4);
+        }
+    }
+})();
