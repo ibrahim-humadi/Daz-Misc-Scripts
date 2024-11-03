@@ -2,8 +2,6 @@
 
 (function(){
 
-	var userSetting = "max";
-
 	function exportSelected(path, morphName)
 	{
 		var exportMgr = App.getExportMgr();
@@ -42,7 +40,10 @@
 		while (!file.eof()) {
 			var line = file.readLine().trim();
 			if (line) {
-				morphList.push(line);
+				var parts = line.split("//");
+				var morphName = parts[0].trim();
+				var value = parts[1].trim();
+				morphList.push({ name: morphName, value: value });
 			}
 		}
 		file.close();
@@ -57,16 +58,17 @@
 	var noMods = object.getNumModifiers();
 
 	for (var i = 0; i < morphList.length; i++) {
-		var morphName = morphList[i];
+		var morphName = morphList[i].name;
+		var value = morphList[i].value;
 		var found = false;
 
 		for (var j = 0; j < propCount; j++) {
 			var prop = figure.getProperty(j);
 			if (prop.name === morphName) {
-				if (userSetting === "max") {
+				if (value === "max") {
 					prop.setValue(prop.getMax());
 				} else {
-					prop.setValue(userSetting);
+					prop.setValue(parseFloat(value));
 				}
 				exportSelected(path, morphName);
 				prop.reset(DzProperty.ResetDefault);
@@ -80,10 +82,10 @@
 				var mod = object.getModifier(k);
 				if (mod.className() === "DzMorph" && mod.name === morphName) {
 					var modProp = mod.getValueControl();
-					if (userSetting === "max") {
+					if (value === "max") {
 						modProp.setValue(modProp.getMax());
 					} else {
-						modProp.setValue(userSetting);
+						modProp.setValue(parseFloat(value));
 					}
 					exportSelected(path, morphName);
 					modProp.reset(DzProperty.ResetDefault);
