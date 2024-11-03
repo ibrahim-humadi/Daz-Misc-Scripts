@@ -191,8 +191,8 @@
     var wgtDialog = dialog.getWidget();
     wgtDialog.objectName = "test thing dialog";
     dialog.caption = "Canvas Creator";
-    dialog.setFixedHeight(260);
-    dialog.setFixedWidth(200);
+    dialog.setFixedHeight(340);
+    dialog.setFixedWidth(190);
     dialog.orientation = DzWidget.Vertical;
     dialog.AlignmentFlags = DzWidget.AlignCenter;
 
@@ -203,8 +203,8 @@
     
     // Create a group box for the options
     var wOptGB = new DzVGroupBox( dialog );
-    wOptGB.setFixedHeight(260);
-    wOptGB.setFixedWidth(200);
+    wOptGB.setFixedHeight(330);
+    wOptGB.setFixedWidth(160);
     //wOptGB.insideSpacing = 10;
     wOptGB.columns = 1;
     
