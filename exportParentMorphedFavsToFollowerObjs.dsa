@@ -1,76 +1,79 @@
-// DAZ Studio version 4.22.0.1 filetype DAZ Script
+// DAZ Studio version 4.22.0.16 filetype DAZ Script
 
-(function(){
+(function() {
+    function exportSelected(path, fileName) {
+        var exportMgr = App.getExportMgr();
+        var exporter = exportMgr.findExporterByClassName("DzObjExporter");
+        if (exporter) {
+            var settings = new DzFileIOSettings();
+            settings.setFloatValue("Scale", 1);
+            settings.setStringValue("LatAxis", "X");
+            settings.setStringValue("VertAxis", "Y");
+            settings.setStringValue("DepthAxis", "Z");
+            settings.setBoolValue("InvertLat", false);
+            settings.setBoolValue("InvertVert", false);
+            settings.setBoolValue("InvertDepth", false);
+            settings.setBoolValue("IgnoreInvisible", true);
+            settings.setBoolValue("RemoveUnusedVerts", false);
+            settings.setBoolValue("WriteVT", true);
+            settings.setBoolValue("WriteVN", true);
+            settings.setBoolValue("SelectedOnly", true);
+            settings.setBoolValue("WriteUsemtl", false);
+            settings.setBoolValue("SelectedRootsOnly", true);
+            settings.setIntValue("RunSilent", 1);
+            exporter.writeFile(path + "/" + fileName + ".obj", settings);
+        }
+    }
 
-	// EDIT ME // By default, we export to max values. To export to a specific value, uncomment line 7 and set to the desired number.
-	var userSetting = "max";
-	//var userSetting = 1;
+    var path = FileDialog.doDirectoryDialog(qsTr("Please select a Directory to output .obj files"));
+    if (!path) {
+        MessageBox.warning("Export cancelled.");
+        return;
+    }
 
-    function exportFollower(path, morphName, follower)
-	{
-		var exportMgr = App.getExportMgr();
-		var exporter = exportMgr.findExporterByClassName("DzObjExporter");
-		if( exporter ){
-			var settings = new DzFileIOSettings();
-			settings.setFloatValue( "Scale", 1 );
-			settings.setStringValue( "LatAxis", "X" );
-			settings.setStringValue( "VertAxis", "Y" );
-			settings.setStringValue( "DepthAxis", "Z" );
-			settings.setBoolValue( "InvertLat", false );
-			settings.setBoolValue( "InvertVert", false );
-			settings.setBoolValue( "InvertDepth", false );
-			settings.setBoolValue( "IgnoreInvisible", true );
-			settings.setBoolValue( "RemoveUnusedVerts", false );
-			settings.setBoolValue( "WriteVT", true );
-			settings.setBoolValue( "WriteVN", true );
-			settings.setBoolValue( "SelectedOnly", true );
-			settings.setBoolValue( "WriteUsemtl", false );    
-			settings.setBoolValue( "", false );
-			settings.setBoolValue( "SelectedRootsOnly", true );
-			settings.setIntValue( "RunSilent", 1 );
-			exporter.writeFile( path + "/" + morphName + "_Follower.obj", settings );
-		}
-	};
+    var figure = Scene.getSelectedNode(0); // Ensure the main figure is selected
+    if (!figure) {
+        MessageBox.warning("No figure selected.");
+        return;
+    }
 
-    var figure = Scene.getSelectedNodeList()[0]; // Assumes the first selected node is the figure
-    var follower = Scene.getSelectedNodeList()[1]; // Assumes the second selected node is the follower
-    if (!figure || !follower) {
-        MessageBox.warning("Please select a figure and a follower in the scene.", "Error", "&OK");
+    var follower = Scene.getSelectedNode(1); // Assume the follower is also selected
+    if (!follower) {
+        MessageBox.warning("No follower selected.");
         return;
     }
     
-    print("Figure: " + figure.name);
-    print("Follower: " + follower.name);
+    figure.select(false);
+
     var propCount = figure.getNumProperties();
-    print("Number of Properties: " + propCount);
+    var object = figure.getObject();
+    var noMods = object.getNumModifiers();
 
-    var path = FileDialog.doDirectoryDialog(qsTr("Please select a Directory to output .obj files"));
-
-    if (!path) {
-        print("No directory selected. Exiting script.");
-        return;
-    }
-
+    // Iterate over favorited properties of the figure
     for (var i = 0; i < propCount; i++) {
         var prop = figure.getProperty(i);
+        if (prop.isFavorite()) {
+            // Set the property to its max value and export the follower
+            prop.setValue(prop.getMax());
+            exportSelected(path, prop.name);
 
-        if (prop.isFavorite()) { 
-            if (prop.currentValueIsDefaultValue()) {
-				// Dial in the morph on the figure
-				if (userSetting === "max") {
-					prop.setValue(prop.getMax());
-				} else {
-					prop.setValue(userSetting);
-				}
+            // Reset the property to its default value
+            prop.reset(DzProperty.ResetDefault);
+        }
+    }
 
-                // Export the follower with the morph dialed in on the figure
-                exportFollower(path, prop.name, follower);
+    // Iterate over favorited modifiers (morphs) of the figure
+    for (var i = 0; i < noMods; i++) {
+        var mod = object.getModifier(i);
+        if (mod.className() === "DzMorph") {
+            var modProp = mod.getValueControl();
+            if (modProp && modProp.isFavorite()) {
+                // Set the modifier to its max value and export the follower
+                modProp.setValue(modProp.getMax());
+                exportSelected(path, mod.name);
 
-                // Reset the morph value on the figure
-                prop.reset(DzProperty.ResetDefault);
-            } else {
-                MessageBox.information(qsTr("You have morphs favorited that are not set to their default values!"), qsTr("ExportFavs"), qsTr("&OK"));
-                break;
+                // Reset the modifier to its default value
+                modProp.reset(DzProperty.ResetDefault);
             }
         }
     }
