@@ -16,7 +16,7 @@
         morphLoader.setCreateControlProperty(false);
         morphLoader.setPropertyGroupPath("Morph Loader Pro");
         morphLoader.setReverseDeformations(true);
-        morphLoader.setOverwriteExisting(DzMorphLoader.MakeUnique);
+        morphLoader.setOverwriteExisting(DzMorphLoader.DeltasOnly);
         morphLoader.setCleanUpOrphans(true);
         morphLoader.setMorphMirroring(DzMorphLoader.DoNotMirror);
 
