@@ -1,0 +1,132 @@
+// DAZ Studio version 4.22.0.16 filetype DAZ Script
+
+(function() {
+    function createMorph(morph_name, garment, objFilePath) {
+        var morphBatch = new DzMorphLoaderBatch();
+        var morphLoader = new DzMorphLoader();
+        morphLoader.setFilename(objFilePath);
+        morphLoader.setMorphName(morph_name);
+        morphLoader.setMorphSubdivision(true);
+        morphLoader.setSubdivisionBuiltResolution(1);
+        morphLoader.setSubdivisionMinResolution(0);
+        morphLoader.setSubdivisionMaxResolution(2);
+        morphLoader.setSubdivisionSmoothCage(false);
+        morphLoader.setSubdivisionMapping(DzMorphLoader.Catmark);
+        morphLoader.setDeltaTolerance(0.001);
+        morphLoader.setCreateControlProperty(false);
+        morphLoader.setPropertyGroupPath("Morph Loader Pro");
+        morphLoader.setReverseDeformations(true);
+        morphLoader.setOverwriteExisting(DzMorphLoader.MakeUnique);
+        morphLoader.setCleanUpOrphans(true);
+        morphLoader.setMorphMirroring(DzMorphLoader.DoNotMirror);
+
+        var morphImportSettings = new DzFileIOSettings();
+        morphImportSettings.setFloatValue("Scale", 1);
+        morphImportSettings.setStringValue("LatAxis", "X");
+        morphImportSettings.setStringValue("VertAxis", "Y");
+        morphImportSettings.setStringValue("DepthAxis", "Z");
+        morphImportSettings.setBoolValue("InvertLat", false);
+        morphImportSettings.setBoolValue("InvertVert", false);
+        morphImportSettings.setBoolValue("InvertDepth", false);
+        morphImportSettings.setBoolValue("IncludeVT", false);
+        morphImportSettings.setBoolValue("IncludeG", false);
+        morphImportSettings.setBoolValue("IncludeUsemtl", false);
+        morphImportSettings.setBoolValue("IncludeMtllib", false);
+        morphImportSettings.setIntValue("RunSilent", 1);
+
+        morphBatch.addMorph(morphLoader);
+        morphBatch.createMorphs(morphImportSettings, garment, false, true);
+    }
+
+    var selectedNodes = Scene.getSelectedNodeList();
+    if (selectedNodes.length < 2) {
+        MessageBox.critical("Please select the figure first and then the garment.", "Error");
+        return;
+    }
+
+    var figure = selectedNodes[0];
+    var garment = selectedNodes[1];
+
+    var directoryPath = FileDialog.doDirectoryDialog("Select a directory containing OBJ files");
+    if (!directoryPath) {
+        MessageBox.warning("Operation canceled.", "Warning");
+        return;
+    }
+
+    var directory = new DzDir(directoryPath);
+    if (!directory.exists()) {
+        MessageBox.critical("Invalid directory path.", "Error");
+        return;
+    }
+
+    var fileList = directory.entryList("*.obj", DzDir.Files);
+    if (fileList.length === 0) {
+        MessageBox.warning("No OBJ files found in the directory.", "Warning");
+        return;
+    }
+
+    var propCount = figure.getNumProperties();
+    var object = figure.getObject();
+    var noMods = object.getNumModifiers();
+
+    for (var i = 0; i < fileList.length; i++) {
+        var fileName = fileList[i];
+        var morphName = fileName.replace(".obj", "");
+        print("Processing: " + morphName);
+
+        var morphFound = false;
+
+        // Find the morph/property on the figure
+        for (var j = 0; j < propCount; j++) {
+            var prop = figure.getProperty(j);
+            if (prop.name === morphName) {
+                prop.setValue(prop.getMax());
+                morphFound = true;
+                break;
+            }
+        }
+
+        if (!morphFound) {
+            for (var k = 0; k < noMods; k++) {
+                var mod = object.getModifier(k);
+                if (mod.className() === "DzMorph" && mod.name === morphName) {
+                    var modProp = mod.getValueControl();
+                    modProp.setValue(modProp.getMax());
+                    morphFound = true;
+                    break;
+                }
+            }
+        }
+
+        if (!morphFound) {
+            print("Morph '" + morphName + "' not found on the figure.");
+            continue;
+        }
+
+        // Get full path to the OBJ file
+        var objFilePath = directoryPath + "/" + fileName;
+
+        // Create the morph on the garment
+        createMorph(morphName, garment, objFilePath);
+
+        // Reset the morph/property on the figure
+        for (var j = 0; j < propCount; j++) {
+            var prop = figure.getProperty(j);
+            if (prop.name === morphName) {
+                prop.reset(DzProperty.ResetDefault);
+                break;
+            }
+        }
+
+        for (var k = 0; k < noMods; k++) {
+            var mod = object.getModifier(k);
+            if (mod.className() === "DzMorph" && mod.name === morphName) {
+                var modProp = mod.getValueControl();
+                modProp.reset(DzProperty.ResetDefault);
+                break;
+            }
+        }
+    }
+
+    print("Process complete. Morphs created for all matching OBJs.");
+})();
