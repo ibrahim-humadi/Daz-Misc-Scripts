@@ -1,0 +1,108 @@
+// DAZ Studio version 4.22.0.16 filetype DAZ Script
+
+(function() {
+    function createMorph(morph_name, garment, objFilePath) {
+        var morphBatch = new DzMorphLoaderBatch();
+        var morphLoader = new DzMorphLoader();
+        morphLoader.setFilename(objFilePath);
+        morphLoader.setMorphName(morph_name);  // No .obj in morph name
+        morphLoader.setMorphSubdivision(true);
+        morphLoader.setSubdivisionBuiltResolution(1);
+        morphLoader.setSubdivisionMinResolution(0);
+        morphLoader.setSubdivisionMaxResolution(2);
+        morphLoader.setSubdivisionSmoothCage(false);
+        morphLoader.setSubdivisionMapping(DzMorphLoader.Catmark);
+        morphLoader.setDeltaTolerance(0.001);
+        morphLoader.setCreateControlProperty(false);
+        morphLoader.setPropertyGroupPath("Morph Loader Pro");
+        morphLoader.setReverseDeformations(true);
+        morphLoader.setOverwriteExisting(DzMorphLoader.DeltasOnly);
+        morphLoader.setCleanUpOrphans(true);
+        morphLoader.setMorphMirroring(DzMorphLoader.DoNotMirror);
+
+        var morphImportSettings = new DzFileIOSettings();
+        morphImportSettings.setFloatValue("Scale", 1);
+        morphImportSettings.setStringValue("LatAxis", "X");
+        morphImportSettings.setStringValue("VertAxis", "Y");
+        morphImportSettings.setStringValue("DepthAxis", "Z");
+        morphImportSettings.setBoolValue("InvertLat", false);
+        morphImportSettings.setBoolValue("InvertVert", false);
+        morphImportSettings.setBoolValue("InvertDepth", false);
+        morphImportSettings.setBoolValue("IncludeVT", false);
+        morphImportSettings.setBoolValue("IncludeG", false);
+        morphImportSettings.setBoolValue("IncludeUsemtl", false);
+        morphImportSettings.setBoolValue("IncludeMtllib", false);
+        morphImportSettings.setIntValue("RunSilent", 1);
+
+        morphBatch.addMorph(morphLoader);
+        morphBatch.createMorphs(morphImportSettings, garment, false, true);
+    }
+
+    var selectedNodes = Scene.getSelectedNodeList();
+    if (selectedNodes.length < 2) {
+        MessageBox.critical("Please select the figure first and then the garment.", "Error");
+        return;
+    }
+
+    var figure = selectedNodes[0];
+    var garment = selectedNodes[1];
+
+    var poseFilePath = FileDialog.doFileDialog("Select a Pose List File", "*.txt");
+    if (!poseFilePath) {
+        MessageBox.warning("Operation canceled.", "Warning");
+        return;
+    }
+
+    var poseFile = new DzFile(poseFilePath);
+    if (!poseFile.open(DzFile.ReadOnly)) {
+        MessageBox.critical("Failed to open pose list file.", "Error");
+        return;
+    }
+
+    var contentMgr = App.getContentMgr();
+
+    while (true) {
+        var poseLine = poseFile.readLine();
+        if (!poseLine) {
+            break; // End of file
+        }
+
+        poseLine = poseLine.trim();
+        if (!poseLine || poseLine.startsWith("#")) {
+            continue; // Skip empty or commented lines
+        }
+
+        // Split the line into pose URI and morph name
+        var parts = poseLine.split("//");
+        if (parts.length !== 2) {
+            print("Invalid line format: " + poseLine);
+            continue;
+        }
+
+        var poseUri = parts[0].trim();
+        var morphName = parts[1].trim();  // Keep morph name as is
+        print("Processing pose: " + poseUri + " with morph name: " + morphName);
+
+        try {
+            // Apply the pose to the figure
+            figure.select(true);
+            garment.select(false);
+            var myUri = DzUri(poseUri);
+            contentMgr.openUri(myUri);
+            print("Applied pose: " + poseUri);
+
+            // Create the morph on the garment with the corresponding morph name
+            // No .obj extension appended to morph name
+            figure.select(false);
+            garment.select(true);
+            var objFilePath = poseUri.replace(/[^a-zA-Z0-9_-]/g, "_") + ".obj";
+            createMorph(morphName, garment, objFilePath);  // Use the morph name directly
+
+        } catch (err) {
+            print("Error applying pose or creating morph: " + err.message);
+        }
+    }
+
+    poseFile.close();
+    print("Process complete. Morphs created for all poses.");
+})();
