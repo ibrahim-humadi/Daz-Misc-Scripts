@@ -1,0 +1,100 @@
+// DAZ Studio version 4.22.0.16 filetype DAZ Script
+
+(function () {
+    function exportSelected(path, fileName) {
+        try {
+            var exportMgr = App.getExportMgr();
+            var exporter = exportMgr.findExporterByClassName("DzObjExporter");
+            if (exporter) {
+                var settings = new DzFileIOSettings();
+                settings.setFloatValue("Scale", 1);
+                settings.setStringValue("LatAxis", "X");
+                settings.setStringValue("VertAxis", "Y");
+                settings.setStringValue("DepthAxis", "Z");
+                settings.setBoolValue("InvertLat", false);
+                settings.setBoolValue("InvertVert", false);
+                settings.setBoolValue("InvertDepth", false);
+                settings.setBoolValue("IgnoreInvisible", true);
+                settings.setBoolValue("RemoveUnusedVerts", false);
+                settings.setBoolValue("WriteVT", true);
+                settings.setBoolValue("WriteVN", true);
+                settings.setBoolValue("SelectedOnly", true);
+                settings.setBoolValue("WriteUsemtl", false);
+                settings.setBoolValue("SelectedRootsOnly", true);
+                settings.setIntValue("RunSilent", 1);
+                exporter.writeFile(path + "/" + fileName + ".obj", settings);
+                print("Exported: " + fileName);
+            }
+        } catch (err) {
+            print("Error during export: " + err.message);
+        }
+    }
+
+    var poseFilePath = FileDialog.doFileDialog(
+        qsTr("Select a Pose List File"),
+        "*.txt"
+    );
+    if (!poseFilePath) {
+        MessageBox.warning("Operation cancelled.");
+        return;
+    }
+
+    var path = FileDialog.doDirectoryDialog(
+        qsTr("Select a Directory to output .obj files")
+    );
+    if (!path) {
+        MessageBox.warning("Export cancelled.");
+        return;
+    }
+
+    var figure = Scene.getSelectedNode(0);
+    if (!figure) {
+        MessageBox.warning("No figure selected. Please select a figure.");
+        return;
+    }
+
+    var garment = Scene.getSelectedNode(1);
+    if (!garment) {
+        MessageBox.warning("No garment selected. Please select a garment.");
+        return;
+    }
+
+    var file = new DzFile(poseFilePath);
+    if (!file.open(DzFile.ReadOnly)) {
+        MessageBox.critical("Failed to open pose list file.");
+        return;
+    }
+
+    var contentMgr = App.getContentMgr();
+    while (true) {
+        var poseUri = file.readLine();
+        if (!poseUri) {
+            break; // End of file
+        }
+        poseUri = poseUri.trim();
+        if (!poseUri || poseUri.startsWith("#")) {
+            continue; // Skip empty or commented lines
+        }
+
+        try {
+            garment.select(false);
+            var myUri = DzUri(poseUri);
+            contentMgr.openUri(myUri);
+            print("Applied pose: " + poseUri);
+
+            // Export the garment
+            figure.select(false);
+            garment.select(true);
+            exportSelected(path, poseUri.replace(/[^a-zA-Z0-9_-]/g, "_"));
+
+            // Reset selection
+            figure.select(true);
+            garment.select(false);
+        } catch (err) {
+            print("Error applying pose or exporting: " + err.message);
+        }
+    }
+
+    file.close();
+    print("Process complete.");
+})();
