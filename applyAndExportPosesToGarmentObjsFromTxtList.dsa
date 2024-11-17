@@ -67,13 +67,27 @@
 
     var contentMgr = App.getContentMgr();
     while (true) {
-        var poseUri = file.readLine();
-        if (!poseUri) {
+        var poseLine = file.readLine();
+        if (!poseLine) {
             break; // End of file
         }
-        poseUri = poseUri.trim();
-        if (!poseUri || poseUri.startsWith("#")) {
+
+        poseLine = poseLine.trim();
+        if (!poseLine || poseLine.startsWith("#")) {
             continue; // Skip empty or commented lines
+        }
+
+        // Split the line into URI and pose name (after the "//" comment)
+        var parts = poseLine.split("//");
+        if (parts.length < 2) {
+            continue; // Skip lines without a valid pose name comment
+        }
+
+        var poseUri = parts[0].trim();
+        var poseName = parts[1].trim();
+
+        if (!poseUri || !poseName) {
+            continue; // Skip if either part is empty
         }
 
         try {
@@ -82,10 +96,10 @@
             contentMgr.openUri(myUri);
             print("Applied pose: " + poseUri);
 
-            // Export the garment
+            // Export the garment using the pose name for the OBJ filename
             figure.select(false);
             garment.select(true);
-            exportSelected(path, poseUri.replace(/[^a-zA-Z0-9_-]/g, "_"));
+            exportSelected(path, poseName.replace(/[^a-zA-Z0-9_-]/g, "_"));
 
             // Reset selection
             figure.select(true);
