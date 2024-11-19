@@ -5,7 +5,7 @@
         var morphBatch = new DzMorphLoaderBatch();
         var morphLoader = new DzMorphLoader();
         morphLoader.setFilename(objFilePath);
-        morphLoader.setMorphName(morph_name);  // No .obj in morph name
+        morphLoader.setMorphName(morph_name); // Use morph name as is
         morphLoader.setMorphSubdivision(true);
         morphLoader.setSubdivisionBuiltResolution(1);
         morphLoader.setSubdivisionMinResolution(0);
@@ -47,9 +47,17 @@
     var figure = selectedNodes[0];
     var garment = selectedNodes[1];
 
+    // Prompt for the directory containing the OBJ files
+    var path = FileDialog.doDirectoryDialog(qsTr("Please select a Directory to import .obj files"));
+    if (!path) {
+        MessageBox.warning("Export cancelled.");
+        return;
+    }
+
+    // Prompt for the pose list file
     var poseFilePath = FileDialog.doFileDialog("Select a Pose List File", "*.txt");
     if (!poseFilePath) {
-        MessageBox.warning("Operation canceled.", "Warning");
+        MessageBox.warning("Operation canceled. No pose list file selected.", "Warning");
         return;
     }
 
@@ -80,7 +88,7 @@
         }
 
         var poseUri = parts[0].trim();
-        var morphName = parts[1].trim();  // Keep morph name as is
+        var morphName = parts[1].trim(); // Keep morph name as is
         print("Processing pose: " + poseUri + " with morph name: " + morphName);
 
         try {
@@ -91,12 +99,14 @@
             contentMgr.openUri(myUri);
             print("Applied pose: " + poseUri);
 
-            // Create the morph on the garment with the corresponding morph name
-            // No .obj extension appended to morph name
+            // Generate the full path to the corresponding OBJ file
+            var objFilePath = path + "/" + morphName + ".obj";
+            print("Using OBJ file: " + objFilePath);
+
+            // Create the morph on the garment
             figure.select(false);
             garment.select(true);
-            var objFilePath = poseUri.replace(/[^a-zA-Z0-9_-]/g, "_") + ".obj";
-            createMorph(morphName, garment, objFilePath);  // Use the morph name directly
+            createMorph(morphName, garment, objFilePath);
 
         } catch (err) {
             print("Error applying pose or creating morph: " + err.message);
