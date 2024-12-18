@@ -18,14 +18,14 @@ if (objTwo) {
 
 print("########## Item One ##########");
 print("Name: " + vertMeshOne.name );
-print("Label: " + vertMeshOne.label);
+print("Label: " + vertMeshOne.getLabel);
 print("Vertex count: " + vertMeshOne.getNumVertices());
 print("Face count: " + vertMeshOne.getNumFacets());
 print("########## End of Item One ##########");
 
 print("########## Item Two ##########");
 print("Name: " + vertMeshTwo.name );
-print("Label: " + vertMeshTwo.label);
+print("Label: " + vertMeshTwo.getLabel);
 print("Vertex count: " + vertMeshTwo.getNumVertices());
 print("Face count: " + vertMeshTwo.getNumFacets());
 print("########## End of Item Two ##########");
