@@ -1,0 +1,72 @@
+// DAZ Studio version 4.22.0.1 filetype DAZ Script
+
+var nodes = Scene.getSelectedNodeList();
+meshOne = nodes[0];
+meshTwo = nodes[1];
+
+var objOne = meshOne.getObject();  
+var shapeOne = objOne.getShape(0);
+if (objOne) {    
+    var vertMeshOne = shapeOne.getGeometry();
+}
+
+var objTwo = meshTwo.getObject(); 
+var shapeTwo = objOne.getShape(0);
+if (objTwo) {    
+    var vertMeshTwo = shapeTwo.getGeometry();
+}
+
+print("########## Item One ##########");
+print("Name: " + vertMeshOne.name );
+print("Label: " + vertMeshOne.label);
+print("Vertex count: " + vertMeshOne.getNumVertices());
+print("Face count: " + vertMeshOne.getNumFacets());
+print("########## End of Item One ##########");
+
+print("########## Item Two ##########");
+print("Name: " + vertMeshTwo.name );
+print("Label: " + vertMeshTwo.label);
+print("Vertex count: " + vertMeshTwo.getNumVertices());
+print("Face count: " + vertMeshTwo.getNumFacets());
+print("########## End of Item Two ##########");
+
+var matching = true;
+
+if (vertMeshOne.getNumVertices() == vertMeshTwo.getNumVertices() && vertMeshOne.getNumFacets() == vertMeshTwo.getNumFacets()) {
+    print("MATCHING - The two meshes have the same number of vertices and faces as one another!");
+
+    // Start vertex-by-vertex comparison
+    var numVertices = vertMeshOne.getNumVertices();
+    var nonMatchingVertices = []; // Store indices of non-matching vertices
+
+    for (var i = 0; i < numVertices; i++) {
+        var vertexOne = vertMeshOne.getVertex(i); // DzVec3
+        var vertexTwo = vertMeshTwo.getVertex(i); // DzVec3
+
+        // Check if vertices match
+        if (vertexOne.x != vertexTwo.x || vertexOne.y != vertexTwo.y || vertexOne.z != vertexTwo.z) {
+            nonMatchingVertices.push(i);
+        }
+    }
+
+    // Summary of results
+    if (nonMatchingVertices.length > 0) {
+        print("Found " + nonMatchingVertices.length + " non-matching vertices.");
+
+        // Iterate through non-matching vertices and display their values
+        for (var j = 0; j < nonMatchingVertices.length; j++) {
+            var idx = nonMatchingVertices[j];
+            var vertexOne = vertMeshOne.getVertex(idx);
+            var vertexTwo = vertMeshTwo.getVertex(idx);
+
+            print("Non-matching vertex index: " + idx);
+            print("Vertex One: (" + vertexOne.x + ", " + vertexOne.y + ", " + vertexOne.z + ")");
+            print("Vertex Two: (" + vertexTwo.x + ", " + vertexTwo.y + ", " + vertexTwo.z + ")");
+        }
+    } else {
+        print("All vertices match!");
+    }
+} else {
+    matching = false;
+    print("NOT-MATCHING - The two meshes have mismatched number of vertices and/or faces to each other!");
+}
