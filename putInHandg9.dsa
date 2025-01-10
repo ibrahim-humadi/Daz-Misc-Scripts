@@ -1,0 +1,51 @@
+// DAZ Studio version 4.22.0.1 filetype DAZ Script
+
+(function(){
+	beginUndo();
+	var dialogBox = new DzBasicDialog();
+	var groupBox = new DzGroupBox(dialogBox);
+	var leftHandButton = new DzPushButton(groupBox);
+	leftHandButton.text = "Left";
+	leftHandButton.AlignmentFlags = DzWidget.AlignLeft;
+	var rightHandButton = new DzPushButton(groupBox);
+	rightHandButton.text = "Right";
+	rightHandButton.AlignmentFlags = DzWidget.AlignRight;
+	dialogBox.showCancelButton(false);
+	dialogBox.showAcceptButton(false);
+	dialogBox.showHelpButton(false);
+
+	function LeftButtonPressed(){
+		var leftHandVert = vertMesh.getVertex(8338);
+		prop.setWSPos(leftHandVert);
+		leftHand.addNodeChild(prop,true);
+		dialogBox.close();
+	}
+
+	function RightButtonPressed(){
+		var rightHandVert = vertMesh.getVertex(19574);	
+		prop.setWSPos(rightHandVert);
+		rightHand.addNodeChild(prop,true);
+		dialogBox.close();
+	}
+
+	var nodes = Scene.getSelectedNodeList();
+	var figure = nodes[0];
+	var leftHand = figure.findNodeChildByLabel("Left Hand", true);
+	var rightHand = figure.findNodeChildByLabel("Right Hand", true);
+
+
+	var prop = nodes[1];
+
+	var Obj = figure.getObject();  
+	if( Obj ) 
+	{    
+		var vertMesh = Obj.getCachedGeom();
+	};
+
+	leftHandButton.clicked.connect(leftHandButton, LeftButtonPressed);
+	rightHandButton.clicked.connect(rightHandButton, RightButtonPressed);
+
+	dialogBox.exec();
+	acceptUndo("Moved " + prop.name + " to " + figure.name);
+
+})();
