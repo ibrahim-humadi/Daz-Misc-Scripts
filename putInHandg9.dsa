@@ -30,8 +30,8 @@
 
 	var nodes = Scene.getSelectedNodeList();
 	var figure = nodes[0];
-	var leftHand = figure.findNodeChildByLabel("Left Hand", true);
-	var rightHand = figure.findNodeChildByLabel("Right Hand", true);
+	var leftHand = figure.findNodeChildByLabel("Left Hand Anchor", true);
+	var rightHand = figure.findNodeChildByLabel("Right Hand Anchor", true);
 
 
 	var prop = nodes[1];
