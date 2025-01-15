@@ -12,7 +12,7 @@
 * **hide_unselected.dsa**
   - Hides currently unselected nodes.
 * **unhideSelected.dsa**
-  - unhide currently selected nodes.
+  - Unhide currently selected nodes.
 * **unhideAll.dsa**
   - Unhide all nodes.
 * **MakeUnselectableNonSelected.dsa**
@@ -27,6 +27,8 @@
   - Sets the currently selected node's X,Y,Z Translate values to 0.
 * **MatchTransforms.dsa**
   - Takes the first selected node and changes its Transform's (XYZ Translate, rotate, and scale) to match the second selected node/figure.
+* **MatchTransformsAndPose.dsa**
+  - Takes the first selected node and changes its Transform's (XYZ Translate, rotate, and scale) to match the second selected node/figure. Copies the First node's pose and pastes it to second Node/figure.
 * **MoveToFocalPoint.dsa**
   - Moves the currently selected node/nodes to the current viewport's focal point.
 * **MoveToFocalPointAndToFloor.dsa**
@@ -46,9 +48,11 @@
 * **exportEachFavToObj.dsa**
   - Exports each favorited morph set to max value individually to a .obj(s). prompts for output directory.
 * **exportBaseResSubD0Obj.dsa**
-  - mimics the fuctionality of daz export at base reolution script. produces .obj of same filesize.
+  - Mimics the fuctionality of daz export at base reolution script. produces .obj of same filesize.
 * **lookAtNullTarget.dsa**
-  - select g9 figure and run, creates a child null and points eyes at it, if null already exsists toggles eyes point at.
+  - Select g9 figure and run, creates a child null and points eyes at it, if null already exsists toggles eyes point at.
+* **putInHandg9.dsa**
+  - Select g9 figure and then select prop. run script, moves prop to centre of g9's palm and parents prop to g9 hand anchor.
 
 ## Camera and Render Settings
 * **CopyCameraDimensionsToRenderSettings.dsa**
