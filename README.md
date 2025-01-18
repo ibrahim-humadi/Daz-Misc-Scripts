@@ -53,6 +53,8 @@
   - Select g9 figure and run, creates a child null and points eyes at it, if null already exsists toggles eyes point at.
 * **putInHandg9.dsa**
   - Select g9 figure and then select prop. run script, moves prop to centre of g9's palm and parents prop to g9 hand anchor.
+* **copyFavsToFigure.dsa**
+  - Takes the first selected node and copies its favorited props and morphs to the second selected node/figure.
 
 ## Camera and Render Settings
 * **CopyCameraDimensionsToRenderSettings.dsa**
