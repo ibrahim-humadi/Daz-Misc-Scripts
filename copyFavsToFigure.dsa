@@ -1,0 +1,49 @@
+// DAZ Studio version 4.22.0.16 filetype DAZ Script
+
+(function(){
+	var selectedNodes = Scene.getSelectedNodeList();
+	var figure = selectedNodes[0];
+	var target = selectedNodes[1];
+	
+	
+	var helper = DzSceneHelper();
+	
+	var propFavs = [];
+	var morphFavs = [];
+	
+	var propCount = figure.getNumProperties();
+	for (i = 0; i < propCount; i++) {
+		prop = figure.getProperty(i);
+	
+		if(prop.isFavorite())
+		{ 
+			propFavs.push(prop.name);
+		}
+	}
+	var object = figure.getObject();
+		var noMods = object.getNumModifiers();
+		for( i = 0; i < noMods; i += 1 ){
+			mod = object.getModifier(i);
+			if (mod.className() == "DzMorph")
+			{
+				modProp = mod.getValueControl();
+				if(modProp.isFavorite())
+		        {
+		        	morphFavs.push(modProp.getLabel());
+	
+		        }
+			}
+		}
+		
+	var combinedFavs = propFavs.concat(morphFavs);
+	
+	beginUndo();
+	for( k = 0; k < combinedFavs.length; k += 1 ){
+		var morphOrProp = helper.findPropertyByLabel(combinedFavs[k],target);
+		if(!morphOrProp.isFavorite())
+			{
+				morphOrProp.setIsFavorite(true);
+			}
+	}
+	acceptUndo("Set " + combinedFavs.length + " favs to " + target.name);
+})();
