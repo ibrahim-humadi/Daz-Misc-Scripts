@@ -17,7 +17,7 @@
 	
 		if(prop.isFavorite())
 		{ 
-			propFavs.push(prop.name);
+			propFavs.push(prop.getLabel());
 		}
 	}
 	var object = figure.getObject();
@@ -36,7 +36,7 @@
 		}
 		
 	var combinedFavs = propFavs.concat(morphFavs);
-	
+	print(combinedFavs);
 	beginUndo();
 	for( k = 0; k < combinedFavs.length; k += 1 ){
 		var morphOrProp = helper.findPropertyByLabel(combinedFavs[k],target);
