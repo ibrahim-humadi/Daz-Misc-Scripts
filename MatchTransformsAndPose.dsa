@@ -37,6 +37,18 @@ var actionMgr = MainWindow.getActionMgr();
 var copyFigAction = actionMgr.findAction("DzCopyFigureAction");
 var pasteFigAction = actionMgr.findAction("DzPasteFigurePoseAction");
 
+if (nodes[0].getNodeParent())
+{
+    var parentOfFigOne = nodes[0].getNodeParent();
+    parentOfFigOne.removeNodeChild(nodes[0],true);
+} 
+
+if (nodes[1].getNodeParent())
+{
+    var parentOfFigTwo = nodes[1].getNodeParent();
+    parentOfFigTwo.removeNodeChild(nodes[1],true);
+} 
+
 if(copyFigAction){
 nodes[0].select(false);
 copyFigAction.trigger();
