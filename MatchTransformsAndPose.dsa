@@ -35,6 +35,7 @@ var targetZScale = nodes[1].findProperty("ZScale");
 beginUndo();
 var actionMgr = MainWindow.getActionMgr();
 var copyFigAction = actionMgr.findAction("DzCopyFigureAction");
+var limitsOffAction = actionMgr.findAction("DzLimitsOffAction");
 var pasteFigAction = actionMgr.findAction("DzPasteFigurePoseAction");
 
 if (nodes[0].getNodeParent())
@@ -54,9 +55,13 @@ nodes[0].select(false);
 copyFigAction.trigger();
 }
 
-if(pasteFigAction){
+if (limitsOffAction){
 nodes[1].select(false);
 nodes[0].select(true);
+limitsOffAction.trigger();
+}
+
+if(pasteFigAction){
 pasteFigAction.trigger();
 }
 
