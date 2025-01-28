@@ -1,0 +1,10 @@
+// DAZ Studio version 4.22.0.16 filetype DAZ Script
+
+(function(){
+	beginUndo();
+	var lights = Scene.getLightList();
+	for (var m = 0; m < lights.length; m++) {
+		Scene.removeNode(lights[m]);
+	}
+	acceptUndo("Deleted all light nodes");
+})();
