@@ -1,0 +1,14 @@
+// DAZ Studio version 4.23.0.1 filetype DAZ Script
+
+// DAZ Studio version 4.22.0.16 filetype DAZ Script
+
+(function(){
+	beginUndo();
+	var cameras = Scene.getCameraList();	
+	for (var i = 0; i < cameras.length; i++) {
+	    if (!cameras[i].isVisible()) {
+	        Scene.removeNode(cameras[i]);
+	    }
+	}
+	acceptUndo("Deleted all non selected Camera nodes");
+})();	
