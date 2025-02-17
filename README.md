@@ -55,6 +55,8 @@
   - Select g9 figure and then select prop. run script, moves prop to centre of g9's palm and parents prop to g9 hand anchor.
 * **copyFavsToFigure.dsa**
   - Takes the first selected node and copies its favorited props and morphs to the second selected node/figure.
+* **deleteUnselectedCameras.dsa**
+  - Deleted non-selected cameras.
 
 ## Camera and Render Settings
 * **CopyCameraDimensionsToRenderSettings.dsa**
