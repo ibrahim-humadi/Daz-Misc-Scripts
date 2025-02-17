@@ -1,0 +1,12 @@
+// DAZ Studio version 4.22.0.16 filetype DAZ Script
+
+var helper = new DzSceneHelper();
+var selectedNode = Scene.getPrimarySelection();
+var props = helper.getPropertiesOnNode(selectedNode,false); 
+
+print(props.length);
+for (var i = 0; i < props.length; i++) {
+	 if (props[i].name.indexOf("Eye Look") != -1){
+	 	print(props[i].name);
+	 }
+}
