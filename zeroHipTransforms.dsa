@@ -1,0 +1,36 @@
+// DAZ Studio version 4.23.0.1 filetype DAZ Script
+
+(function(){
+	var selectedNode = Scene.getPrimarySelection();
+	var helper = new DzSceneHelper();
+	
+	if (selectedNode.getLabel() != "Hip"){
+		var hip = selectedNode.findNodeChildByLabel("Hip",true);
+	}
+	else 
+	{ 
+		var hip = selectedNode;
+	}
+	
+	if(hip){
+		beginUndo();
+		var propXTrans = helper.findPropertyByLabel("X Translate",hip);
+		var propYTrans = helper.findPropertyByLabel("Y Translate",hip);
+		var propZTrans = helper.findPropertyByLabel("Z Translate",hip);
+		
+		var propXRot = helper.findPropertyByLabel("X Rotate", hip);
+	    var propYRot = helper.findPropertyByLabel("Y Rotate", hip);
+	    var propZRot = helper.findPropertyByLabel("Z Rotate", hip);
+		
+		var scale = helper.findPropertyByLabel("Scale",hip);
+		
+	    if (propXTrans){propXTrans.setValue(propXTrans.getDefaultValue());};
+	    if (propYTrans){propYTrans.setValue(propYTrans.getDefaultValue());};
+	    if (propZTrans){propZTrans.setValue(propZTrans.getDefaultValue());};
+	
+	    if (propXRot){propXRot.setValue(propXRot.getDefaultValue());};
+	    if (propYRot){propYRot.setValue(propYRot.getDefaultValue());};
+	    if (propZRot){propZRot.setValue(propZRot.getDefaultValue());};
+	    acceptUndo("Zero'd Hip on: " + selectedNode.getLabel());
+	}
+})();
