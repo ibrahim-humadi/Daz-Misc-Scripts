@@ -1,0 +1,14 @@
+// DAZ Studio version 4.23.1.36 filetype DAZ Script
+
+(function(){
+	beginUndo();
+	var nodes = Scene.getNodeList();	
+	for (var n = 0; n < nodes.length; n++){
+		if(nodes[n].className() == "DzGroupNode"){
+			if(nodes[n].getNumNodeChildren() == 0){
+				Scene.removeNode(nodes[n]);
+			}
+		}			
+	}
+	acceptUndo("Deleted empty nodes");
+})();		
