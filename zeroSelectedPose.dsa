@@ -1,0 +1,6 @@
+// DAZ Studio version 4.23.1.36 filetype DAZ Script
+(function(){
+	var actionMgr = MainWindow.getActionMgr();
+	var zeroFigAction = actionMgr.findAction("DzZeroPoseAction");
+	zeroFigAction.triggerWithSettings({ "RunSilent" : true });
+})();
