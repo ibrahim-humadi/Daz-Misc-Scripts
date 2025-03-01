@@ -1,0 +1,12 @@
+// DAZ Studio version 4.23.1.36 filetype DAZ Script
+
+(function(){
+	beginUndo();
+    var cameraToCopy = Scene.getPrimarySelection();
+	var viewPortMgr = MainWindow.getViewportMgr();
+	var viewPort = viewPortMgr.getActiveViewport().get3DViewport();
+	var camera = viewPort.getCamera();
+	camera.setWSPos(cameraToCopy.getWSPos());
+	camera.setWSRot(cameraToCopy.getWSRot());
+	acceptUndo("Matched Perspective to: " + cameraToCopy.name);
+})();
