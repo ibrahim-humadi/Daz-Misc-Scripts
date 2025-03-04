@@ -1,0 +1,710 @@
+// DAZ Studio version 4.22.0.16 filetype DAZ Script
+
+function SaveMaterialPreset(nameOfPreset,directoryToSaveTo){	
+// Initialize whether or not property sub-items are supported
+	var g_bSupportsMaterialSubItems = false;
+	var g_bSupportsNameAsKey = false;
+	
+	// Initialize 'static' variables that hold modifier key state
+	var s_bShiftPressed = false;
+	var s_bControlPressed = false;
+	var s_bAltPressed = false;
+	var s_bMetaPressed = false;
+	var bTraverse = true;
+	var bRecurse = true;
+	
+	// If the "Action" global transient is defined, and its the correct type
+	if( typeof( Action ) != "undefined" && Action.inherits( "DzScriptAction" ) ){
+		// If the current key sequence for the action is not pressed
+		if( !App.isKeySequenceDown( Action.shortcut ) ){
+			updateModifierKeyState();
+		}
+	// If the "Action" global transient is not defined
+	} else if( typeof( Action ) == "undefined" ) {
+		updateModifierKeyState();
+	}
+	
+	/*********************************************************************/
+	// void : A function for updating the keyboard modifier state
+	function updateModifierKeyState()
+	{
+		// Get the current modifier key state
+		var nModifierState = App.modifierKeyState();
+		// Update variables that hold modifier key state
+		s_bShiftPressed = (nModifierState & 0x02000000) != 0;
+		s_bControlPressed = (nModifierState & 0x04000000) != 0;
+		s_bAltPressed = (nModifierState & 0x08000000) != 0;
+		s_bMetaPressed = (nModifierState & 0x10000000) != 0;
+	};
+	
+	/*********************************************************************/
+	// void : A function for printing only if debugging
+	function debug()
+	{
+		// If we are not debugging
+		if( !s_bAltPressed ){
+			// We are done...
+			return;
+		}
+		
+		// Convert the arguments object into an array
+		var aArguments = [].slice.call( arguments );
+		
+		// Print the array
+		print( aArguments.join(" ") );
+	};
+	
+	/*********************************************************************/
+	// String : A function for retrieving a translation if one exists
+	function text( sText )
+	{
+		// If the version of the application supports qsTr()
+		if( typeof( qsTr ) != "undefined" ){
+			// Return the translated (if any) text
+			return qsTr( sText );
+		}
+ 
+		// Return the original text
+		return sText;
+	};
+	
+	/*********************************************************************/
+	// Boolean : A function for testing whether or not a QObject instance
+	// inherits one of a list of types
+	function inheritsType( oObject, aTypeNames )
+	{
+		// If the object does not define the 'inherits' function
+		if( !oObject || typeof( oObject.inherits ) != "function" ){
+			// We are done... it is not a QObject
+			return false;
+		}
+		
+		// Iterate over the list of type names
+		for( var i = 0, nTypes = aTypeNames.length; i < nTypes; i += 1 ){
+			// If the object does not inherit the 'current' type
+			if( !oObject.inherits( aTypeNames[i] ) ){
+				// Next!!
+				continue;
+			}
+			
+			// Return the result
+			return true;
+		}
+		
+		// Return the result
+		return false;
+	};
+	
+	/*********************************************************************/
+	// Array<DzProperty> : A function for getting a list of the properties in a group
+	function getGroupProperties( oGroup, bTraverse, bRecurse )
+	{
+		// Declare an array to hold properties
+		var aProperties = [];
+		
+		// If a group is not passed in
+		if( !oGroup ){
+			// We are done, return an empty array
+			return aProperties;
+		}
+		
+		// Get the number of proeprties in the group
+		var nProperties = oGroup.getNumProperties();
+		// Pre-size the properties array
+		aProperties = new Array( nProperties );
+		// Iterate over the properties, setting each element in the array
+		for( var i = 0; i < nProperties; i += 1 ){
+			// Assign the property to the position in the array
+			aProperties[ i ] = oGroup.getProperty( i );
+		}
+		
+		// If we are recursing
+		if( bRecurse ){
+			// Concatenate the properties array from child groups
+			aProperties = aProperties.concat(
+				getGroupProperties( oGroup.getFirstChild(), true, bRecurse ) );
+		}
+		
+		// If we are traversing
+		if( bTraverse ){
+			// Concatenate the properties array from sibling groups
+			aProperties = aProperties.concat(
+				getGroupProperties( oGroup.getNextSibling(), bTraverse, bRecurse ) );
+		}
+ 		
+		// Return the array of properties
+		return aProperties;
+	};
+	
+	/*********************************************************************/
+	// Array<DzProperty> : A function for getting the list properties for an element
+	function getElementProperties( oElement, bTraverse, bRecurse )
+	{
+		// Get the property group tree for the element
+		var oPropertyGroupTree = oElement.getPropertyGroups();
+		
+		// If the application version is 4.9.0.101 or newer and we want all properties
+		if( true ){
+			// Return the properties for the element
+			return oPropertyGroupTree.getAllProperties();
+		}
+		
+		// Get the first group in the tree
+		var oPropertyGroup = oPropertyGroupTree.getFirstChild();
+		// Return the properties for the element
+		return getGroupProperties( oPropertyGroup, bTraverse, bRecurse );
+	};
+	
+	/*********************************************************************/
+	// Array<DzProperty> : A function for getting the list properties for an element
+	function getElementPropertiesInPath( oElement, sPath, bRecurse )
+	{
+		// If the path is empty
+		if( !sPath ){
+			// Return the properties for the element
+			return getElementProperties( oElement, true, bRecurse );
+		}
+		
+		// Initialize
+		var oGroup = oElement.getPropertyGroups();
+		var sName = "";
+		var nIdx = -1;
+		var sSubPath = sPath;
+		
+		// While the remaining path is not empty
+		while( oGroup && !sSubPath.isEmpty() ){
+			// Get the index of the first slash
+			nIdx = sSubPath.indexOf( "/" );
+			// If a slash was not found
+			if( nIdx < 0 ){
+				// The group name is the path
+				sName = sSubPath;
+				// Break the loop on the next evaluation
+				sSubPath = "";
+			// If a slash was found
+			} else {
+				// The group name is before the slash
+				sName = sSubPath.left( nIdx );
+				// Get the remaining path
+				sSubPath = sSubPath.right( sSubPath.length - nIdx - 1 );
+			}
+			
+			// Get the sub group
+			oGroup = oGroup ? oGroup.findChild( sName ) : null;
+		}
+		
+		// Return the properties for the element
+		return getGroupProperties( oGroup, false, bRecurse );
+	};
+	
+	/*********************************************************************/
+	// DzNode : A function for getting the root of a node
+	function getRootNode( oNode )
+	{
+		// If we have a node and it is a bone
+		if( oNode && inheritsType( oNode, ["DzBone"] ) ){
+			// We want the skeleton
+			return oNode.getSkeleton();
+		}
+		
+		// Return the original node
+		return oNode;
+	};
+	
+	/*********************************************************************/
+	// void : A function for setting the default material options
+	function setDefaultMaterialOptions( oSettings )
+	{
+		// Set the initial state of whether or not to exclude material definitions
+		oSettings.setBoolValue( "OmitDefinitions", false );
+	};
+	
+	/*********************************************************************/
+	// void : A function for setting the default options
+	function setDefaultOptions( oSettings, sRootLabel )
+	{
+		// If the root label is not empty
+		if( !sRootLabel.isEmpty() ){
+			// Set the label of the root node to find it in the scene;
+			// this can be used to override selection within the scene
+			oSettings.setStringValue( "RootLabel", sRootLabel );
+		}
+	};
+	
+	/*********************************************************************/
+	// void : A function for setting the property options for an element
+	function setElementPropertyOptions( oSettings, sElementSettingsKey, sElementName, aPropNames, bSubItems, bNameAsKey )
+	{
+		// Get the (nested) settings that hold the named element and properties
+		var oElementsSettings = oSettings.getSettingsValue( sElementSettingsKey );
+		// If the object doesn't already exist
+		if( !oElementsSettings ){
+			// Create it
+			oElementsSettings = oSettings.setSettingsValue( sElementSettingsKey );
+		}
+		
+		// Get the (nested) settings object for the element
+		var oElementSettings = oElementsSettings.getSettingsValue( sElementName );
+		// If the object doesn't already exist
+		if( !oElementSettings ){
+			// Create it
+			oElementSettings = oElementsSettings.setSettingsValue( sElementName );
+		}
+		
+		// Declare working variable
+		var vPropertyItem;
+		var sPropertyName;
+		var oPropertySettings, oSubItemSettings;
+		
+		// Iterate over the property items
+		for( var i = 0; i < aPropNames.length; i += 1 ){
+			// Get the 'current' property item
+			vPropertyItem = aPropNames[ i ];
+			
+			// If the filter doesn't support property sub-items,
+			// or the property item is a string
+			if( !bSubItems || typeof( vPropertyItem ) == "string" ){
+				// Set the property name to the item
+				sPropertyName = vPropertyItem;
+				
+				// Add a setting wherein the key is the index in the list
+				// and the value is the property name
+				oElementSettings.setStringValue( String( i ), sPropertyName );
+			// If the property item is an array
+			} else if( typeof( vPropertyItem ) == "object" && Array.isArray( vPropertyItem ) ){
+				// Set the property name to the first item, which should be a string
+				sPropertyName = (vPropertyItem.length > 0 &&
+					typeof( vPropertyItem[ 0 ] ) == "string" ? vPropertyItem[ 0 ] : "");
+				// If the name was not set
+				if( sPropertyName.isEmpty() ){
+					// Next!!
+					continue;
+				}
+				
+				if( bNameAsKey ){
+					// Get the (nested) settings object for the property
+					oPropertySettings = oElementSettings.getSettingsValue( sPropertyName );
+					// If the object doesn't already exist
+					if( !oPropertySettings ){
+						// Create it
+						oPropertySettings = oElementSettings.setSettingsValue( sPropertyName );
+					}
+					
+					// Iterate over the items, skippping the first element
+					for( var j = 1; j < vPropertyItem.length; j += 1 ){
+						// Set a named key to the value
+						oPropertySettings.setStringValue( String( j - 1 ), vPropertyItem[ j ] )
+					}
+				} else {
+					// Get the (nested) settings object for the property
+					oPropertySettings = oElementSettings.getSettingsValue( i );
+					// If the object doesn't already exist
+					if( !oPropertySettings ){
+						// Create it
+						oPropertySettings = oElementSettings.setSettingsValue( i );
+					}
+					
+					// Set the name setting
+					oPropertySettings.setStringValue( "name", sPropertyName );
+					// Get the (nested) settings object for the subitems
+					oSubItemSettings = oPropertySettings.getSettingsValue( "subitems" );
+					// If the object doesn't already exist
+					if( !oSubItemSettings ){
+						// Create it
+						oSubItemSettings = oPropertySettings.setSettingsValue( "subitems" );
+					}
+					
+					// Iterate over the items, skippping the first element
+					for( var j = 1; j < vPropertyItem.length; j += 1 ){
+						// Set an index key to the value
+						oSubItemSettings.setStringValue( String( j - 1 ), vPropertyItem[ j ] )
+					}
+				}
+			}
+		}
+	};
+	
+	/*********************************************************************/
+	// void : A function for setting the property options for a node
+	function setMaterialPropertyOptions( oSettings, sMaterialName, aPropNames )
+	{
+		// Set the property options for the named material
+		setElementPropertyOptions( oSettings, "MaterialNames", sMaterialName, aPropNames, g_bSupportsMaterialSubItems, g_bSupportsNameAsKey );
+	};
+	
+	/*********************************************************************/
+	// void : A function for setting common property options for multiple nodes
+	function setCommonMaterialPropertyOptions( oSettings, aMaterialNames, aPropNames )
+	{
+		// Iterate over the material names array
+
+	};
+
+	
+	/*********************************************************************/
+	// String || Array<String,String> : A function for getting the property entry
+	function getPropertyEntry( oProperty, bIncludeValue, bIncludeImage )
+	{
+		bIncludeImage = true;
+		bIncludeValue = true;
+		// If the property is numeric and mappable
+		if( inheritsType( oProperty, ["DzNumericProperty"] ) && oProperty.isMappable() ){
+			// If we are including value and image
+			if( bIncludeValue == bIncludeImage ){
+				// Use the label
+				return oProperty.getLabel();
+			// If we are only including the value
+			} else if( bIncludeValue ){
+				// Use the label and Value keyword
+				return [ oProperty.getLabel(), "Value" ];
+			// If we are only including the image
+			} else if( bIncludeImage ){
+				// Use the label and Image keyword
+				return [ oProperty.getLabel(), "Image" ];
+			} else {
+				return undefined;
+			}
+		}
+		
+		// Use the label
+		return oProperty.getLabel();
+	};
+	
+	/*********************************************************************/
+	// Get the asset IO manager
+	var oAssetIOMgr = App.getAssetIOMgr();
+	// Define the class name of the asset filter we want to use
+	var sClassName = "DzMaterialAssetFilter";
+	// Find the index of the asset filter with the class name we want
+	var nAssetIOFilter = oAssetIOMgr.findFilter( sClassName );
+	// If we did not find an asset filter with the class name we wanted
+	if( nAssetIOFilter < 0 ){
+		// Inform the user
+		MessageBox.critical( text( "An asset filter with the class name " +
+			"\"%1\" could not be found.").arg( sClassName ),
+			text( "Critical Error" ), text( "&OK" ) );
+		
+		// We are done...
+		return;
+	}
+	
+	// Get the asset filter at the prescribed index
+	var oAssetIOFilter = oAssetIOMgr.getFilter( nAssetIOFilter );
+	// If we do not have a valid asset filter
+	if( !oAssetIOFilter ){
+		// Inform the user
+		MessageBox.critical( text( "An asset filter with the class name " +
+			"\"%1\" could not be found.").arg( sClassName ),
+			text( "Critical Error" ), text( "&OK" ) );
+		
+		// We are done...
+		return;
+	}
+	
+	// Create a settings object
+	var oSettings = new DzFileIOSettings();
+	
+	// Get the default settings
+	oAssetIOFilter.getDefaultOptions( oSettings );
+	
+	// Define whether or not to show options
+	var bShowOptions = s_bControlPressed;
+	var bOptionsShown = false;
+	
+	// Get the root of the primary selection
+	var oRootNode = getRootNode( Scene.getPrimarySelection() );
+	
+	// If we had a node selected, get its name otherwise use a default
+	var sRootName = (oRootNode ? oRootNode.getName() : "Genesis8Female");
+	var sRootLabel = (oRootNode ? oRootNode.getLabel() : "");
+	
+	// Get the content manager
+	var oContentMgr = App.getContentMgr();
+	
+	// Get the base path - the first mapped content directory
+	var sBasePath = oContentMgr.getContentDirectoryPath( 0 );
+	
+	// Set the default options; this can be used to set
+	// options before the dialog is displayed
+	setDefaultOptions( oSettings, sRootLabel );
+	
+	// Set the initial state of the material specific options
+	setDefaultMaterialOptions( oSettings );
+	
+	// Debug
+	debug( "Defaults:", oSettings.toJsonString() );
+	
+	// If we are showing options, we can override the last saved state
+	// by passing in the settings we want to override;
+	// if we cannot get the default/saved options for the asset filter,
+	// without displaying the options dialog
+	if( !oAssetIOFilter.getOptions( oSettings, bShowOptions, "" ) ){
+		// We are done...
+		return;
+	// If we can get the options for the importer
+	} else {
+		// Capture that options were shown
+		bOptionsShown = true;
+		
+		// Debug
+		debug( "Get:", oSettings.toJsonString() );
+	}
+	
+	// If we are not showing options
+	if( !bShowOptions ){
+		// Set the default options
+		setDefaultOptions( oSettings, sRootLabel );
+		
+		// The material asset filter supports property sub-items;
+		// if the property name is specified alone, as a string,
+		// it will cause the Value and Image data for that property
+		// to be saved to the preset; if the property element is
+		// specified in an array of strings, where the first item
+		// is the property name followed by "Value" and/or "Image",
+		// then only the specified data for that property will be
+		// saved to the preset
+		g_bSupportsMaterialSubItems = true;
+		
+		// Define an explicit list of material names
+		var aMaterialNames = [ "Arms", "Ears", "Face", "Legs", "Torso" ];
+		// Define an explicit list of property names
+		var aPropertyNames = [ ["Diffuse Color", "Value"], ["Diffuse Strength", "Value"] ];
+		
+		// Define whether or not to use selection
+		var bUseSelection = true;
+		
+		// If we are using selection
+		if( bUseSelection ){
+			// Clear the lists
+			aMaterialNames = [];
+			aPropertyNames = [];
+			
+			// Define an list of property group paths to include
+			var aPropertyBasePaths = [];
+			
+			// Define whether to include property attributes
+			var bIncludeValue = true;
+			var bIncludeImage = true;
+			
+			// Get the object for the node
+			var oObject = oRootNode.getObject();
+			// If we do not have an object
+			if( !oObject ){
+				// We are done..
+				return;
+			}
+		 
+			// Get the current shape for the object
+			var oShape = oObject.getCurrentShape();
+			// If we do not have a shape
+			if( !oShape ){
+				// We are done..
+				return;
+			}
+			
+			// Get the selected materials
+			var aMaterials = oShape.getAllSelectedMaterials();
+			// If we do not have any selected materials
+			if( aMaterials.length < 1 ){
+				// Get all of the materials
+				aMaterials = oShape.getAllMaterials();
+			}
+			
+			// Declare working variables
+			var oMaterial, oProperty;
+			var aProps;
+			var sPath;
+			var bHasProp;
+			var vProp;
+			
+			// Iterate over the materials
+			for( var i = 0; i < aMaterials.length; i += 1 ){
+				// Get the 'current' material
+				oMaterial = aMaterials[ i ];
+				
+				// Initialize
+				bHasProp = false;
+				
+				// Get the properties associated with the material
+				aProps = getElementProperties( oMaterial, true, true );
+				// Iterate over the properties
+				for( var j = 0; j < aProps.length; j += 1 ){
+					// Get the 'current' property
+					oProperty = aProps[ j ];
+					
+					// Initialize
+					vProp = undefined;
+					
+					// If we are filtering by group
+					if( aPropertyBasePaths.length > 0 ){
+						// Get the group path
+						sPath = oProperty.getPath();
+						
+						// Iterate over base paths
+						for( var k = 0; k < aPropertyBasePaths.length; k += 1 ){
+							// If this prop resides within
+							if( sPath.startsWith( aPropertyBasePaths[ k ] ) ){
+								// Get the property entry
+								vProp = getPropertyEntry( oProperty, bIncludeValue, bIncludeImage );
+								
+								// We are done...
+								break;
+							}
+						}
+					// If we are not filtering
+					} else {
+						// Get the property entry
+						vProp = getPropertyEntry( oProperty, bIncludeValue, bIncludeImage );
+					}
+					
+					// If we have a property entry
+					if( vProp ){
+						// Append it to our list
+						aPropertyNames.push( vProp );
+						// Update our flag
+						bHasProp = true;
+					}
+				}
+				
+				// If we have a reason to include the material
+				if( bHasProp ){
+					// Append its name to the list
+					aMaterialNames.push( oMaterial.name );
+				}
+			}
+		}
+		
+		// Set common property options for multiple muterials
+		for( var i = 0; i < aMaterialNames.length; i += 1 ){
+			// Set the property options for the 'current' material name
+			setMaterialPropertyOptions( oSettings, aMaterialNames[i], aPropertyNames );
+			setMaterialPropertyOptions( oSettings, aMaterialNames[i], [ ["Diffuse Color", "Value", "Image"], ["Metallic Weight", "Value", "Image"]] );			
+			}
+
+			// Set specific property options for a material
+			
+			//setMaterialPropertyOptions( oSettings, "Pupils", [ "Diffuse Color" ] );
+			
+			// Set whether to bypass the filter that culls properties based on
+			// their type; use this with caution as this could lead to
+			// unexpected results for the user of the generated file
+			oSettings.setBoolValue( "BypassFilter", false );
+	}
+		print("aMaterialsNamesLength= " + aMaterialNames.length);
+	
+		// Set the required options; override user settings if needed
+		// Set the initial state of the compress file checkbox
+		oSettings.setBoolValue( "CompressOutput", false );
+		
+		// Do not to show the options
+		oSettings.setBoolValue( "RunSilent", !bShowOptions );
+	
+	// Debug
+	debug( "Required:", oSettings.toJsonString() );
+	
+	// Construct the name of the file to save to; omit file extension
+	var sFile = directoryToSaveTo + nameOfPreset;
+	
+
+	// Use the asset manager to save a file, using the filter and defined settings
+	var oError = oAssetIOMgr.doSaveWithOptions(oAssetIOFilter,oSettings,false, sFile, directoryToSaveTo, "" );
+	
+	// If there was no error
+	if( oError.valueOf() == 0x00000000 ){
+		// Debug
+		debug( "Saved:", sFile );
+	// If there was an error
+	} else {
+		// Debug
+		debug( "Error:", getErrorMessage( oError ) );
+	}
+	
+	// Clean up; do not leak memory
+	oAssetIOFilter.deleteLater();
+}
+
+var paneMgr = MainWindow.getPaneMgr();
+var paneIndex = 0;
+for (i = 0; i < paneMgr.getNumPanes(); i++) {
+    if (paneMgr.getPane(i).name == "ContentLibrary")
+    {
+        paneIndex = i;
+    }
+}
+
+var contentPane = paneMgr.getPane(paneIndex);
+
+var contentMgr = App.getContentMgr();
+var selectedAssets = contentPane.getSelectedAssets();
+
+var selectedNode = Scene.getPrimarySelection();
+var shape = selectedNode.getObject().getCurrentShape();
+var mats = shape.getAllMaterials();
+var imageMgr = App.getImageMgr();
+
+var dialogBox = new DzBasicDialog();
+var groupBox = new DzGroupBox(dialogBox);
+var listBox = new DzListBox(groupBox);
+var label = new DzLabel(groupBox);
+var lineEdit = new DzLineEdit(groupBox);
+
+label.text = "Suffix: ";
+
+dialogBox.setFixedSize( 800, 600 );
+groupBox.height = 600;
+groupBox.width = 400;
+listBox.height = 400;
+listBox.width = 400;
+listBox.selectionMode = DzListBox.Extended;
+
+
+for (var m = 0; m < mats.length; m++) {
+	var mat = mats[m];
+	mat.select(false);
+	listBox.insertItem(mat.getLabel(),m);
+}
+
+var surfacesToApplyTo = [];
+ 
+if (dialogBox.exec() == true){
+	
+	var filePath = FileDialog.doDirectoryDialog(qsTr("Please select a Directory"));
+	if (!filePath) {
+		MessageBox.warning("File selection cancelled.");
+		return;
+	}
+	if (filePath)
+	{
+	
+		print(filePath);
+		
+		for (var k = 0; k < listBox.count; k++) {
+			if (listBox.isSelected(k)){
+				surfacesToApplyTo.push(listBox.text(k));
+				print("adding: " + listBox.text(k) + " to List");
+			}
+		}
+
+
+		for (y = 0; y < selectedAssets.length; y++) {
+		contentMgr.loadAsset(selectedAssets[y]);
+
+			for (var d = 0; d < mats.length; d++) {
+				var mat = mats[d];
+				if (surfacesToApplyTo.lastIndexOf(mat.getLabel()) != -1){
+					mat.select(true);
+				}			
+			}
+
+			var parts = selectedAssets[y].displayName.split(".");
+			var name = parts[0];       // "Ida Belt"
+			var extension = "." + parts[1]; // ".duf" 
+
+			
+			var noSpaces = lineEdit.text.replace(/\s+/g,'');
+			var fullName = (name + " " + noSpaces);
+			SaveMaterialPreset(fullName, filePath + "/");	
+		}
+	}	
+}
+	//add script	
