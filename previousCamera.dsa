@@ -5,14 +5,14 @@
 	var viewPort = viewPortMgr.getActiveViewport().get3DViewport();
 	var camera = viewPort.getCamera();
 	var cameras = Scene.getCameraList();
-	var desiredPos = cameras.find(camera) + 1;
+	var desiredPos = cameras.find(camera) - 1;
 	print(desiredPos);
 	var desiredCam;
-	if (desiredPos < cameras.length){
+	if (desiredPos >= 0){
 		desiredCam = Scene.getCamera(desiredPos);
 		viewPort.setCamera(desiredCam);
 	} else {
-		desiredCam = Scene.getCamera(0);
+		desiredCam = Scene.getCamera(cameras.length - 1);
 		viewPort.setCamera(desiredCam);
 	}	
 })();
