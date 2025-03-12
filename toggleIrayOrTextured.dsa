@@ -1,0 +1,17 @@
+// DAZ Studio version 4.23.1.36 filetype DAZ Script
+
+(function(){
+	var viewPortMgr = MainWindow.getViewportMgr();
+	var viewPort = viewPortMgr.getActiveViewport().get3DViewport();
+	var actionMgr = MainWindow.getActionMgr();
+	
+	if (viewPort.getDrawStyle().shadeStyle() == 8){
+
+			var irayAction = actionMgr.findAction("DzIrayDrawStyleAction");
+			irayAction.trigger();		
+	} else if (viewPort.getDrawStyle().shadeStyle() == 6){
+			var texturedAction = actionMgr.findAction("DzTexturedStyleAction");
+			texturedAction.trigger();	
+	}
+	
+})();
