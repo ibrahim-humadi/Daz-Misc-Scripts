@@ -55,8 +55,16 @@
   - Select g9 figure and then select prop. run script, moves prop to centre of g9's palm and parents prop to g9 hand anchor.
 * **copyFavsToFigure.dsa**
   - Takes the first selected node and copies its favorited props and morphs to the second selected node/figure.
+* **deleteLights.dsa**
+  - Deletes all lights in scene.
+* **deleteHiddenCameras.dsa**
+  - Deletes all hidden cameras.
 * **deleteUnselectedCameras.dsa**
-  - Deleted non-selected cameras.
+  - Deletes non-selected cameras.
+* **deleteUnselectedCamerasVersion2.dsa**
+  - Deletes non-selected or not-currently being used by viewport cameras.
+* **deleteEmptyGroups.dsa**
+  - Deletes empty groups in scene.
 
 ## Camera and Render Settings
 * **CopyCameraDimensionsToRenderSettings.dsa**
@@ -67,6 +75,12 @@
   - Copies the global render settings Dimensions to all cameras in the scene.
 * **FocalPointGizmo.dsa**
   - Select camera and run script. Creates a plane that moves with focal distance. plane can be scaled for better visability.
+* **nextCamera.dsa**
+  - Switch viewport view to next camera in scene.
+* **previousCamera.dsa**
+  - Switch viewport view to previous camera in scene.
+* **toggleIrayOrTextured.dsa**
+  - Toggle/Swaps from Textured view to Iray and from Iray to Textured.
 
 ## Genesis 9 Bones
 * **ResetTwistOnGen9twistbones.dsa**
