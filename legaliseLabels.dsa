@@ -5,7 +5,8 @@ var nodes = Scene.getNodeList();
 for (var i = 0; i < nodes.length; i++) {
 	var nodeLabel = nodes[i].getLabel();
 	var legalLabel = nodeLabel.replace("'","");
-	if (nodeLabel != legalLabel){
-		nodes[i].setLabel(legalLabel);
+	var veryLegalLabel = legalLabel.replace(";","");
+	if (nodeLabel != veryLegalLabel){
+		nodes[i].setLabel(veryLegalLabel);
 	}
 }
