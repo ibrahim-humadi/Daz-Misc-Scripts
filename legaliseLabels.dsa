@@ -1,0 +1,11 @@
+// DAZ Studio version 4.23.1.36 filetype DAZ Script
+
+var nodes = Scene.getNodeList();
+
+for (var i = 0; i < nodes.length; i++) {
+	var nodeLabel = nodes[i].getLabel();
+	var legalLabel = nodeLabel.replace("'","");
+	if (nodeLabel != legalLabel){
+		nodes[i].setLabel(legalLabel);
+	}
+}
