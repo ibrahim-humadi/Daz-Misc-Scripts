@@ -1,0 +1,54 @@
+// DAZ Studio version 6.25.2025.11417 filetype DAZ Script
+
+var figDialogBox = new DzBasicDialog();
+figDialogBox.showCancelButton(false);
+figDialogBox.showAcceptButton(true);
+figDialogBox.showHelpButton(false);
+figDialogBox.caption = "TypeList";
+figDialogBox.setFixedSize(240, 400); // Taller for list
+
+var figLayout = new DzVBoxLayout(figDialogBox);
+
+var searchLabel = new DzLabel(figDialogBox);
+searchLabel.text = "Search Term: "
+figLayout.addWidget(searchLabel);
+
+var searchLineEdit = new DzLineEdit(figDialogBox);
+figLayout.addWidget(searchLineEdit);
+
+var figTable = new DzListBox(figDialogBox);
+figLayout.addWidget(figTable, 1);
+
+var typeList = [];
+
+for (var name in this) {
+    if (typeof this[name] == "function") {
+        typeList.push(name);
+    }
+}
+
+typeList.sort();
+print(typeList.length);
+
+for (var i = 0; i < typeList.length; i++) {
+    figTable.insertItem(typeList[i]);
+}
+
+searchLineEdit.textChanged.connect(function(){
+    UpdateListBasedOnSearch(searchLineEdit.text);
+});
+
+if (figDialogBox.exec()) {
+
+}
+
+function UpdateListBasedOnSearch(searchTerm){
+    figTable.clear(); // Clear current list
+
+    for (var i = 0; i < typeList.length; i++) {
+        var typeName = typeList[i];
+        if (typeName.toLowerCase().indexOf(searchTerm.toLowerCase()) != -1) {
+            figTable.insertItem(typeName);
+        }
+    }
+}
