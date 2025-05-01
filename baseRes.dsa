@@ -1,0 +1,27 @@
+// DAZ Studio version 4.24.0.3 filetype DAZ Script
+
+var figure = Scene.getPrimarySelection();
+var children = figure.getNodeChildren(true); // true = recursive
+var object = figure.getObject();
+
+function processObject(node) {
+	var obj = node.getObject();
+	if (obj) {
+		var shape = obj.getCurrentShape();
+		if (shape) {
+			var subDProp = shape.findProperty('lodlevel');
+			if (subDProp) {
+				print("Node: " + node.getLabel() + " - SubD Level: " + subDProp.getValue());
+				subDProp.setValue(0);
+			}
+		}
+	}
+}
+
+if (object) {
+	processObject(figure);
+}
+
+for (var i = 0; i < children.length; i++) {
+	processObject(children[i]);
+}
