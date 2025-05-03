@@ -1,0 +1,14 @@
+// DAZ Studio version 4.24.0.3 filetype DAZ Script
+
+
+var figure = Scene.getPrimarySelection();
+var object = figure.getObject();
+var shape = object.getCurrentShape();
+var selectedMat = shape.getSelectedMaterial(0);
+var currentOpacity = selectedMat.getBaseOpacity(); 
+
+if (currentOpacity != 0){
+	selectedMat.setBaseOpacity(0);
+} else {
+	selectedMat.setBaseOpacity(1);
+}
