@@ -10,25 +10,43 @@ figDialogBox.minWidth = 800;
 
 var figLayout = new DzVBoxLayout(figDialogBox);
 
+// Parameter Search UI
+var paramSearchLabel = new DzLabel(figDialogBox);
+paramSearchLabel.text = "Search Parameters:";
+figLayout.addWidget(paramSearchLabel);
+
+var paramSearchLineEdit = new DzLineEdit(figDialogBox);
+figLayout.addWidget(paramSearchLineEdit);
+
+var paramListView = new DzListView(figDialogBox);
+paramListView.addColumn("Parameter Name");
+paramListView.addColumn("Node");
+paramListView.setColumnWidth(0, 250);
+paramListView.setColumnWidth(1, 200);
+figLayout.addWidget(paramListView);
+
+// Action Search UI
 var searchLabel = new DzLabel(figDialogBox);
-searchLabel.text = "Search Term:";
+searchLabel.text = "Search Actions:";
 figLayout.addWidget(searchLabel);
 
 var searchLineEdit = new DzLineEdit(figDialogBox);
 figLayout.addWidget(searchLineEdit);
 
 var listView = new DzListView(figDialogBox);
+listView.rootIsDecorated = true;
 listView.addColumn("Name");
 listView.addColumn("Shortcut");
 listView.addColumn("Group");
-listView.setColumnWidthMode(2,DzListView.Manual);
-listView.setColumnWidth(2,150);
-listView.setColumnWidthMode(1,DzListView.Maximum)
+listView.setColumnWidthMode(2, DzListView.Manual);
+listView.setColumnWidth(2, 150);
+listView.setColumnWidthMode(1, DzListView.Maximum);
 listView.addColumn("Description");
 figLayout.addWidget(listView);
 
+// Action setup
 var actionMgr = MainWindow.getActionMgr();
-var actionItems = []; // cache for filtering
+var actionItems = [];
 
 var builtInRoot = new DzListViewItem(listView);
 var customRoot = new DzListViewItem(listView);
@@ -43,6 +61,7 @@ for (var i = 0; i < numActions; i++) {
     var action = actionMgr.getAction(i);
     if (action) {
         var item = new DzListViewItem(builtInRoot);
+        item.multiLinesEnabled = true;
         item.setText(0, action.simpleText);
         item.setText(1, action.shortcut);
         item.setText(2, action.actionGroup);
@@ -67,9 +86,72 @@ for (var j = 0; j < numCustomActions; j++) {
 builtInRoot.open = true;
 customRoot.open = true;
 
-searchLineEdit.textChanged.connect(function(){
-    var term = searchLineEdit.text.toLowerCase();
+// ======= Caching Parameters =======
+var helper = new DzSceneHelper();
+var allProps = []; // [{label, node, prop}]
+var nodes = helper.collectNodes(false, false, false);
 
+for (var i = 0; i < nodes.length; i++) {
+    var node = nodes[i];
+    if (!node || !node.getObject() || !node.isVisible()) continue;
+
+    var props = node.getPropertyList();
+    for (var j = 0; j < props.length; j++) {
+        var prop = props[j];
+
+        var label = prop.getLabel();
+        if (!label || label === "") continue;
+
+        allProps.push({
+            label: label,
+            node: node,
+            prop: prop
+        });
+    }
+}
+
+// ======= Parameter Search Logic =======
+paramSearchLineEdit.textChanged.connect(function () {
+    var term = paramSearchLineEdit.text.trim().toLowerCase();
+    paramListView.clear();
+
+    for (var i = 0; i < allProps.length; i++) {
+        var info = allProps[i];
+        if (term == "" || info.label.toLowerCase().indexOf(term) != -1) {
+            var item = new DzListViewItem(paramListView);
+            item.setText(0, info.label);
+            item.setText(1, info.node.getLabel());
+            item.node = info.node;
+            item.prop = info.prop;
+        }
+    }
+});
+
+// Jump to parameter on double-click
+paramListView.doubleClicked.connect(function () {
+    var item = paramListView.selectedItem();
+    var propLabel = item.text(0)
+    var nodeLabel = item.text(1)
+    var node = Scene.findNodeByLabel(nodeLabel);
+    var prop = helper.findPropertyOnNodeByLabel(propLabel,node);    
+    
+    if (prop){
+	    Scene.selectAllNodes(false);	
+	    node.select(true);
+	    var paneMgr = MainWindow.getPaneMgr();
+	    var panes = paneMgr.getPaneList();
+	    for (var j = 0; j < panes.length; j++) {
+	        if (panes[j].name == "Parameters") {
+	            panes[j].jumpToProperty(prop);
+	            break;
+	        }
+	    }
+    }
+});
+
+// ======= Action Search Logic =======
+searchLineEdit.textChanged.connect(function () {
+    var term = searchLineEdit.text.toLowerCase();
     var builtInVisibleCount = 0;
     var customVisibleCount = 0;
 
@@ -77,8 +159,7 @@ searchLineEdit.textChanged.connect(function(){
         var item = actionItems[i];
         var name = item.text(0).toLowerCase();
         var tooltip = item.text(2).toLowerCase();
-
-        var visible = (term == "" || name.indexOf(term) != -1 || tooltip.indexOf(term) != -1);
+        var visible = (term === "" || name.indexOf(term) !== -1 || tooltip.indexOf(term) !== -1);
         item.visible = visible;
 
         if (visible) {
@@ -94,12 +175,12 @@ searchLineEdit.textChanged.connect(function(){
     customRoot.setText(0, "Custom Actions (" + customVisibleCount + ")");
 });
 
-listView.doubleClicked.connect(function(){
+// Trigger action on double-click
+listView.doubleClicked.connect(function () {
     var selectedItem = listView.selectedItem();
     if (!selectedItem) return;
 
     var selectedText = selectedItem.text(0);
-
     for (var i = 0; i < actionItems.length; i++) {
         var item = actionItems[i];
         if (item.text(0) == selectedText) {
