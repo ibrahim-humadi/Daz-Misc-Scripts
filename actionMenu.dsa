@@ -115,17 +115,40 @@ paramSearchLineEdit.textChanged.connect(function () {
     var term = paramSearchLineEdit.text.trim().toLowerCase();
     paramListView.clear();
 
+    var byNode = {}; // { nodeLabel: { node: DzNode, props: [prop, ...] } }
+
     for (var i = 0; i < allProps.length; i++) {
         var info = allProps[i];
-        if (term == "" || info.label.toLowerCase().indexOf(term) != -1) {
-            var item = new DzListViewItem(paramListView);
-            item.setText(0, info.label);
-            item.setText(1, info.node.getLabel());
-            item.node = info.node;
-            item.prop = info.prop;
+        if (term === "" || info.label.toLowerCase().indexOf(term) !== -1) {
+            var nodeLabel = info.node.getLabel();
+            if (!byNode[nodeLabel]) {
+                byNode[nodeLabel] = { node: info.node, props: [] };
+            }
+            byNode[nodeLabel].props.push(info);
         }
     }
+
+    // Create tree structure in list
+    for (var label in byNode) {
+        var entry = byNode[label];
+        var rootItem = new DzListViewItem(paramListView);
+        rootItem.setText(0, label + " (" + entry.props.length + ")");
+        rootItem.setText(1, "");
+        rootItem.node = entry.node;
+
+        for (var j = 0; j < entry.props.length; j++) {
+            var info = entry.props[j];
+            var childItem = new DzListViewItem(rootItem);
+            childItem.setText(0, info.label);
+            childItem.setText(1, info.node.getLabel());
+            childItem.node = info.node;
+            childItem.prop = info.prop;
+        }
+
+        rootItem.open = true;
+    }
 });
+
 
 // Jump to parameter on double-click
 paramListView.doubleClicked.connect(function () {
