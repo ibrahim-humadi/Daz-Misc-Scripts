@@ -1,0 +1,110 @@
+// DAZ Studio version 6.25.2025.11417 filetype DAZ Script
+
+var figDialogBox = new DzBasicDialog();
+figDialogBox.showCancelButton(false);
+figDialogBox.showAcceptButton(false);
+figDialogBox.showHelpButton(false);
+figDialogBox.caption = "Action Menu";
+figDialogBox.minHeight = 840;
+figDialogBox.minWidth = 800;
+
+var figLayout = new DzVBoxLayout(figDialogBox);
+
+var searchLabel = new DzLabel(figDialogBox);
+searchLabel.text = "Search Term:";
+figLayout.addWidget(searchLabel);
+
+var searchLineEdit = new DzLineEdit(figDialogBox);
+figLayout.addWidget(searchLineEdit);
+
+var listView = new DzListView(figDialogBox);
+listView.addColumn("Name");
+listView.addColumn("Shortcut");
+listView.addColumn("Description");
+figLayout.addWidget(listView);
+
+var actionMgr = MainWindow.getActionMgr();
+var actionItems = []; // cache for filtering
+
+var builtInRoot = new DzListViewItem(listView);
+var customRoot = new DzListViewItem(listView);
+
+var numActions = actionMgr.getNumActions();
+var numCustomActions = actionMgr.getNumCustomActions();
+
+builtInRoot.setText(0, "Built-in Actions (" + numActions + ")");
+customRoot.setText(0, "Custom Actions (" + numCustomActions + ")");
+
+for (var i = 0; i < numActions; i++) {
+    var action = actionMgr.getAction(i);
+    if (action) {
+        var item = new DzListViewItem(builtInRoot);
+        item.setText(0, action.simpleText);
+        item.setText(1, action.shortcut);
+        item.setText(2, action.toolTip);
+        item.actionObj = action;
+        actionItems.push(item);
+    }
+}
+
+for (var j = 0; j < numCustomActions; j++) {
+    var custom = actionMgr.getCustomActionByIndex(j);
+    if (custom) {
+        var item = new DzListViewItem(customRoot);
+        item.setText(0, custom.simpleText);
+        item.setText(1, custom.shortcut);
+        item.setText(2, custom.toolTip);
+        item.actionObj = custom;
+        actionItems.push(item);
+    }
+}
+
+builtInRoot.open = true;
+customRoot.open = true;
+
+searchLineEdit.textChanged.connect(function(){
+    var term = searchLineEdit.text.toLowerCase();
+
+    var builtInVisibleCount = 0;
+    var customVisibleCount = 0;
+
+    for (var i = 0; i < actionItems.length; i++) {
+        var item = actionItems[i];
+        var name = item.text(0).toLowerCase();
+        var tooltip = item.text(2).toLowerCase();
+
+        var visible = (term == "" || name.indexOf(term) != -1 || tooltip.indexOf(term) != -1);
+        item.visible = visible;
+
+        if (visible) {
+            if (item.parent() == builtInRoot) {
+                builtInVisibleCount++;
+            } else if (item.parent() == customRoot) {
+                customVisibleCount++;
+            }
+        }
+    }
+
+    builtInRoot.setText(0, "Built-in Actions (" + builtInVisibleCount + ")");
+    customRoot.setText(0, "Custom Actions (" + customVisibleCount + ")");
+});
+
+listView.doubleClicked.connect(function(){
+    var selectedItem = listView.selectedItem();
+    if (!selectedItem) return;
+
+    var selectedText = selectedItem.text(0);
+
+    for (var i = 0; i < actionItems.length; i++) {
+        var item = actionItems[i];
+        if (item.text(0) == selectedText) {
+            if (item.actionObj) {
+                item.actionObj.trigger();
+                print("Triggered action: " + selectedText);
+            }
+            break;
+        }
+    }
+});
+
+figDialogBox.exec();
