@@ -10,13 +10,14 @@ figDialogBox.minWidth = 800;
 
 var figLayout = new DzVBoxLayout(figDialogBox);
 
-// Parameter Search UI
-var paramSearchLabel = new DzLabel(figDialogBox);
-paramSearchLabel.text = "Search Parameters:";
-figLayout.addWidget(paramSearchLabel);
+// Unified Search UI
+var unifiedSearchLabel = new DzLabel(figDialogBox);
+unifiedSearchLabel.text = "Search Parameters and Actions:";
+figLayout.addWidget(unifiedSearchLabel);
 
-var paramSearchLineEdit = new DzLineEdit(figDialogBox);
-figLayout.addWidget(paramSearchLineEdit);
+var unifiedSearchLineEdit = new DzLineEdit(figDialogBox);
+figLayout.addWidget(unifiedSearchLineEdit);
+
 
 var paramListView = new DzListView(figDialogBox);
 paramListView.addColumn("Parameter Name");
@@ -29,9 +30,6 @@ figLayout.addWidget(paramListView);
 var searchLabel = new DzLabel(figDialogBox);
 searchLabel.text = "Search Actions:";
 figLayout.addWidget(searchLabel);
-
-var searchLineEdit = new DzLineEdit(figDialogBox);
-figLayout.addWidget(searchLineEdit);
 
 var listView = new DzListView(figDialogBox);
 listView.rootIsDecorated = true;
@@ -110,46 +108,6 @@ for (var i = 0; i < nodes.length; i++) {
     }
 }
 
-// ======= Parameter Search Logic =======
-paramSearchLineEdit.textChanged.connect(function () {
-    var term = paramSearchLineEdit.text.trim().toLowerCase();
-    paramListView.clear();
-
-    var byNode = {}; // { nodeLabel: { node: DzNode, props: [prop, ...] } }
-
-    for (var i = 0; i < allProps.length; i++) {
-        var info = allProps[i];
-        if (term === "" || info.label.toLowerCase().indexOf(term) !== -1) {
-            var nodeLabel = info.node.getLabel();
-            if (!byNode[nodeLabel]) {
-                byNode[nodeLabel] = { node: info.node, props: [] };
-            }
-            byNode[nodeLabel].props.push(info);
-        }
-    }
-
-    // Create tree structure in list
-    for (var label in byNode) {
-        var entry = byNode[label];
-        var rootItem = new DzListViewItem(paramListView);
-        rootItem.setText(0, label + " (" + entry.props.length + ")");
-        rootItem.setText(1, "");
-        rootItem.node = entry.node;
-
-        for (var j = 0; j < entry.props.length; j++) {
-            var info = entry.props[j];
-            var childItem = new DzListViewItem(rootItem);
-            childItem.setText(0, info.label);
-            childItem.setText(1, info.node.getLabel());
-            childItem.node = info.node;
-            childItem.prop = info.prop;
-        }
-
-        rootItem.open = true;
-    }
-});
-
-
 // Jump to parameter on double-click
 paramListView.doubleClicked.connect(function () {
     var item = paramListView.selectedItem();
@@ -172,9 +130,45 @@ paramListView.doubleClicked.connect(function () {
     }
 });
 
-// ======= Action Search Logic =======
-searchLineEdit.textChanged.connect(function () {
-    var term = searchLineEdit.text.toLowerCase();
+unifiedSearchLineEdit.textChanged.connect(function () {
+    var term = unifiedSearchLineEdit.text.trim().toLowerCase();
+
+    // ==== Filter Parameters ====
+    paramListView.clear();
+
+    var byNode = {};
+
+    for (var i = 0; i < allProps.length; i++) {
+        var info = allProps[i];
+        if (term === "" || info.label.toLowerCase().indexOf(term) !== -1) {
+            var nodeLabel = info.node.getLabel();
+            if (!byNode[nodeLabel]) {
+                byNode[nodeLabel] = { node: info.node, props: [] };
+            }
+            byNode[nodeLabel].props.push(info);
+        }
+    }
+
+    for (var label in byNode) {
+        var entry = byNode[label];
+        var rootItem = new DzListViewItem(paramListView);
+        rootItem.setText(0, label + " (" + entry.props.length + ")");
+        rootItem.setText(1, "");
+        rootItem.node = entry.node;
+
+        for (var j = 0; j < entry.props.length; j++) {
+            var info = entry.props[j];
+            var childItem = new DzListViewItem(rootItem);
+            childItem.setText(0, info.label);
+            childItem.setText(1, info.node.getLabel());
+            childItem.node = info.node;
+            childItem.prop = info.prop;
+        }
+
+        rootItem.open = true;
+    }
+
+    // ==== Filter Actions ====
     var builtInVisibleCount = 0;
     var customVisibleCount = 0;
 
@@ -197,6 +191,7 @@ searchLineEdit.textChanged.connect(function () {
     builtInRoot.setText(0, "Built-in Actions (" + builtInVisibleCount + ")");
     customRoot.setText(0, "Custom Actions (" + customVisibleCount + ")");
 });
+
 
 // Trigger action on double-click
 listView.doubleClicked.connect(function () {
