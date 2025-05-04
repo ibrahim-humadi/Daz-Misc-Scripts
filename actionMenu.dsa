@@ -20,6 +20,10 @@ figLayout.addWidget(searchLineEdit);
 var listView = new DzListView(figDialogBox);
 listView.addColumn("Name");
 listView.addColumn("Shortcut");
+listView.addColumn("Group");
+listView.setColumnWidthMode(2,DzListView.Manual);
+listView.setColumnWidth(2,150);
+listView.setColumnWidthMode(1,DzListView.Maximum)
 listView.addColumn("Description");
 figLayout.addWidget(listView);
 
@@ -41,7 +45,8 @@ for (var i = 0; i < numActions; i++) {
         var item = new DzListViewItem(builtInRoot);
         item.setText(0, action.simpleText);
         item.setText(1, action.shortcut);
-        item.setText(2, action.toolTip);
+        item.setText(2, action.actionGroup);
+        item.setText(3, action.toolTip);
         item.actionObj = action;
         actionItems.push(item);
     }
