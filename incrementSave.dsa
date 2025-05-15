@@ -1,31 +1,74 @@
-// DAZ Studio version 4.22.0.15 filetype DAZ Script
+// DAZ Studio version 4.24.0.3 filetype DAZ Script
 
-function incrementFilenameNumber(filename) {
-    var match = filename.match(/(\d+)$/); 
-    if (match) {
-        var number = parseInt(match[1], 10); 
-        var incrementedNumber = number + 1; 
-        var formattedNumber = String(incrementedNumber);
-
-        while (formattedNumber.length < match[1].length) {
-            formattedNumber = '0' + formattedNumber;
-        }
-
-        return filename.replace(/\d+$/, formattedNumber);
+function padLeft(str, length) {
+    while (str.length < length) {
+        str = '0' + str;
     }
-    return filename;
+    return str;
 }
 
-var contentMgr = App.getContentMgr();
-var path = Scene.getFilename();
-var lastIndex = path.lastIndexOf('/');
-var directoryPath = path.substring(0, lastIndex + 1);
-var filenameWithExtension = path.substring(lastIndex + 1);
-var dotIndex = filenameWithExtension.lastIndexOf('.');
-var filenameWithoutExtension = filenameWithExtension.substring(0, dotIndex);
-var extension = filenameWithExtension.substring(dotIndex);
-var incrementedFilename = incrementFilenameNumber(filenameWithoutExtension);
-var newFullPath = directoryPath + incrementedFilename + extension;
-Scene.saveScene(newFullPath);
-contentMgr.fileCreated(newFullPath);
-contentMgr.addRecentFile(newFullPath);
+function fileExists(path) {
+    var file = new DzFile(path);
+    return file.exists();
+}
+
+function getIncrementedFilename(basePath, baseName, extension, startNum, padLength, maxTries) {
+    var num = startNum;
+    while (num < maxTries) {
+        var numStr = padLeft(num.toString(), padLength);
+        var fullPath = basePath + baseName + numStr + extension;
+        if (!fileExists(fullPath)) {
+            return fullPath;
+        }
+        num++;
+    }
+    return null;
+}
+
+var sceneName = Scene.getFilename();
+var basePath, baseName, extension, newFilename;
+
+if (!sceneName || sceneName === "") {
+    basePath = App.getLoadSavePath();
+    if (basePath.charAt(basePath.length - 1) !== '/' && basePath.charAt(basePath.length - 1) !== '\\') {
+        basePath += "/";
+    }
+    baseName = "newSave";
+    extension = ".duf";
+    newFilename = getIncrementedFilename(basePath, baseName, extension, 1, 3, 1000);
+} else {
+    var lastSlash = sceneName.lastIndexOf('/');
+    basePath = lastSlash !== -1 ? sceneName.substring(0, lastSlash + 1) : "";
+
+    var fileWithExt = lastSlash !== -1 ? sceneName.substring(lastSlash + 1) : sceneName;
+    var dotIndex = fileWithExt.lastIndexOf('.');
+    var rawName = dotIndex !== -1 ? fileWithExt.substring(0, dotIndex) : fileWithExt;
+    extension = dotIndex !== -1 ? fileWithExt.substring(dotIndex) : ".duf";
+
+    var match = rawName.match(/^(.*?)(\d+)$/);
+    var padLength = 3;
+    var startNum = 1;
+
+    if (match) {
+        baseName = match[1];
+        startNum = parseInt(match[2], 10) + 1;
+        padLength = match[2].length;
+    } else {
+        baseName = rawName;
+        startNum = 1;
+        padLength = 1;
+    }
+
+    newFilename = getIncrementedFilename(basePath, baseName, extension, startNum, padLength, 1000);
+}
+
+if (newFilename) {
+    var success = Scene.saveScene(newFilename);
+    if (success) {
+        print("Scene saved as: " + newFilename);
+    } else {
+        MessageBox.critical("Failed to save scene.", "Error");
+    }
+} else {
+    MessageBox.information("Could not find available filename.", "Error");
+}
