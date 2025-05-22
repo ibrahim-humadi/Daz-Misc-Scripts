@@ -2,13 +2,13 @@
 
 //select the parent first and the childToBe second
 (function(){
-var nodes = Scene.getSelectedNodeList();
+var helper = new DzSceneHelper();
+var nodes = helper.collectNodes(true,false,false);
+
 
 var childToBe = nodes[1];
-var oldParent = ndoes[1].getNodeParent();
-var parentToBe = nodes[0];
+var oldParent = nodes[0];
 
-oldParent.removeNodeChild(childToBe,true);
-parentToBe.addNodeChild( childToBe, true); 
+oldParent.addNodeChild( childToBe, true); 
 
 })();
