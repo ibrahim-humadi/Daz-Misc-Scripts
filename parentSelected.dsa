@@ -7,8 +7,8 @@ var nodes = helper.collectNodes(true,false,false);
 
 
 var childToBe = nodes[1];
-var oldParent = nodes[0];
+var parentToBe = nodes[0];
 
-oldParent.addNodeChild( childToBe, true); 
+parentToBe.addNodeChild( childToBe, true); 
 
 })();
