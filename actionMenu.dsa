@@ -98,7 +98,7 @@ for (var i = 0; i < nodes.length; i++) {
         var prop = props[j];
 
         var label = prop.getLabel();
-        if (!label || label === "") continue;
+        if (!label || label == "") continue;
 
         allProps.push({
             label: label,
@@ -123,8 +123,9 @@ paramListView.doubleClicked.connect(function () {
 	    var panes = paneMgr.getPaneList();
 	    for (var j = 0; j < panes.length; j++) {
 	        if (panes[j].name == "Parameters") {
+                paneMgr.showPane(panes[j]);
 	            panes[j].jumpToProperty(prop);
-	            break;
+                figDialogBox.close();
 	        }
 	    }
     }
@@ -140,7 +141,7 @@ unifiedSearchLineEdit.textChanged.connect(function () {
 
     for (var i = 0; i < allProps.length; i++) {
         var info = allProps[i];
-        if (term === "" || info.label.toLowerCase().indexOf(term) !== -1) {
+        if (term == "" || info.label.toLowerCase().indexOf(term) != -1) {
             var nodeLabel = info.node.getLabel();
             if (!byNode[nodeLabel]) {
                 byNode[nodeLabel] = { node: info.node, props: [] };
@@ -176,7 +177,7 @@ unifiedSearchLineEdit.textChanged.connect(function () {
         var item = actionItems[i];
         var name = item.text(0).toLowerCase();
         var tooltip = item.text(2).toLowerCase();
-        var visible = (term === "" || name.indexOf(term) !== -1 || tooltip.indexOf(term) !== -1);
+        var visible = (term == "" || name.indexOf(term) != -1 || tooltip.indexOf(term) != -1);
         item.visible = visible;
 
         if (visible) {
@@ -203,10 +204,15 @@ listView.doubleClicked.connect(function () {
         var item = actionItems[i];
         if (item.text(0) == selectedText) {
             if (item.actionObj) {
-                item.actionObj.trigger();
-                print("Triggered action: " + selectedText);
+                if(item.actionObj.trigger()){
+                    print("Triggered action: " + selectedText);      
+                }
+                else {
+                    print("ERROR// Couldnt trigger action: " + selectedText);
+                }
             }
-            break;
+            //break;
+            figDialogBox.close();
         }
     }
 });
