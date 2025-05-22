@@ -1,5 +1,6 @@
 // DAZ Studio version 6.25.2025.11417 filetype DAZ Script
 
+var contentMgr = App.getContentMgr();
 var figDialogBox = new DzBasicDialog();
 figDialogBox.showCancelButton(false);
 figDialogBox.showAcceptButton(false);
@@ -170,6 +171,15 @@ unifiedSearchLineEdit.textChanged.connect(function () {
         for (var j = 0; j < entry.props.length; j++) {
             var info = entry.props[j];
             var childItem = new DzListViewItem(rootItem);
+            if (info.prop.getPresentation().iconLarge && info.prop.getPresentation().iconLarge != ""){
+				var fullPath = contentMgr.findFile(info.prop.getPresentation().iconLarge);	                
+                print(fullPath);     
+                var propPixMap = new Pixmap(fullPath);
+                var image = propPixMap.toImage();
+                var scaledImg = image.scale(20,20);
+                propPixMap.fromImage(scaledImg);               
+                childItem.setPixmap(0,propPixMap);
+                }
             childItem.setText(0, info.label);
             childItem.setText(1, info.node.getLabel());
             childItem.node = info.node;
