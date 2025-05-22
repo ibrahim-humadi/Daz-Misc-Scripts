@@ -27,13 +27,10 @@ paramListView.setColumnWidth(1, 200);
 figLayout.addWidget(paramListView);
 
 // Action Search UI
-var searchLabel = new DzLabel(figDialogBox);
-searchLabel.text = "Search Actions:";
-figLayout.addWidget(searchLabel);
 
 var listView = new DzListView(figDialogBox);
 listView.rootIsDecorated = true;
-listView.addColumn("Name");
+listView.addColumn("Action Name");
 listView.addColumn("Shortcut");
 listView.addColumn("Group");
 listView.setColumnWidthMode(2, DzListView.Manual);
@@ -59,7 +56,14 @@ for (var i = 0; i < numActions; i++) {
     var action = actionMgr.getAction(i);
     if (action) {
         var item = new DzListViewItem(builtInRoot);
-        item.multiLinesEnabled = true;
+        //item.multiLinesEnabled = true;
+
+        if (action.iconFile != ""){
+            var actionPixMap = new Pixmap(action.iconFile);
+            actionPixMap.resize(20,20);
+            item.setPixmap(0,actionPixMap);
+        }
+
         item.setText(0, action.simpleText);
         item.setText(1, action.shortcut);
         item.setText(2, action.actionGroup);
@@ -73,6 +77,12 @@ for (var j = 0; j < numCustomActions; j++) {
     var custom = actionMgr.getCustomActionByIndex(j);
     if (custom) {
         var item = new DzListViewItem(customRoot);
+        
+        if (custom.iconFile != ""){
+            var customPixMap = new Pixmap(custom.iconFile);
+            customPixMap.resize(20,20);
+            item.setPixmap(0,customPixMap);
+        }
         item.setText(0, custom.simpleText);
         item.setText(1, custom.shortcut);
         item.setText(2, custom.toolTip);
