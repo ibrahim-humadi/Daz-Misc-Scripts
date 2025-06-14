@@ -1,0 +1,25 @@
+// DAZ Studio version 4.24.0.3 filetype DAZ Script
+
+var sceneHelper = new DzSceneHelper();
+var selectedNodes = Scene.getSelectedNodeList();
+
+var figure = selectedNodes[0];
+var children = figure.getNodeChildren();
+
+for (var j = 0; j < children.length; j++) {
+	var child = children[j];
+	if (child.className() == "DzFigure")
+	{
+		print("hello" + child.name);
+		var skele = child.getFollowControl();
+		child.setVisible(false);
+		skele.reset();
+
+	}	
+}
+
+//getNumNodeChildren() var thing = selectedNodes[1];
+//var followTrgt = figure.getFollowTarget();
+//var followOpts = figure.getFollowingProjectionOptions();
+//print(followOpts);
+//thing.setFollowTarget(followTrgt);

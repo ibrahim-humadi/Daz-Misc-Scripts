@@ -1,0 +1,18 @@
+// DAZ Studio version 4.24.0.3 filetype DAZ Script
+
+var sceneHelper = new DzSceneHelper();
+var selectedNodes = Scene.getSelectedNodeList();
+
+var figure = selectedNodes[0];
+var children = figure.getNodeChildren();
+
+for (var j = 0; j < children.length; j++) {
+	var child = children[j];
+	if (child.className() == "DzFigure")
+	{
+		print("hello" + child.name);
+		var skele = child.getFollowControl();
+		skele.setValue(figure);
+				child.setVisible(true);
+	}	
+}
