@@ -1,0 +1,26 @@
+// DAZ Studio version 4.24.0.3 filetype DAZ Script
+
+
+var figure = Scene.getPrimarySelection();
+var object = figure.getObject();
+var shape = object.getCurrentShape();
+var selectedMats = shape.getAllSelectedMaterials();
+
+for (var d = 0; d < selectedMats.length; d++) {
+	var currentMat = selectedMats[d];
+	var currentMatMatProps = currentMat.getPropertyList();
+	
+	for (var j = 0; j < currentMatMatProps.length; j++) {
+		var currentProp = currentMatMatProps[j];
+		currentProp.reset();
+		try {
+			var mapValue = currentProp.getMapValue();
+			if (mapValue) {
+				currentProp.clearMap();
+			}
+		} catch (e) {
+			print("--- No map found for property:  " + currentProp.name + "  --- Skipping clearMap()")
+		}
+	
+	}
+}
