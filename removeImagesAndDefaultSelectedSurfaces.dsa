@@ -1,26 +1,34 @@
 // DAZ Studio version 4.24.0.3 filetype DAZ Script
 
+var nodes = Scene.getNodeList();
 
-var figure = Scene.getPrimarySelection();
-var object = figure.getObject();
-var shape = object.getCurrentShape();
-var selectedMats = shape.getAllSelectedMaterials();
-
-for (var d = 0; d < selectedMats.length; d++) {
-	var currentMat = selectedMats[d];
-	var currentMatMatProps = currentMat.getPropertyList();
+for (var a = 0; a < nodes.length; a++) {
+	var node = nodes[a];
 	
-	for (var j = 0; j < currentMatMatProps.length; j++) {
-		var currentProp = currentMatMatProps[j];
-		currentProp.reset();
-		try {
-			var mapValue = currentProp.getMapValue();
-			if (mapValue) {
-				currentProp.clearMap();
+	try {
+		var object = node.getObject();
+		var shape = object.getCurrentShape();
+		var selectedMats = shape.getAllSelectedMaterials();
+
+		for (var d = 0; d < selectedMats.length; d++) {
+			var currentMat = selectedMats[d];
+			var currentMatMatProps = currentMat.getPropertyList();
+
+			for (var j = 0; j < currentMatMatProps.length; j++) {
+				var currentProp = currentMatMatProps[j];
+				currentProp.reset();
+				
+				try {
+					var mapValue = currentProp.getMapValue();
+					if (mapValue) {
+						currentProp.clearMap();
+					}
+				} catch (e) {
+					print("--- No map found for property:  " + currentProp.name + "  --- Skipping clearMap()");
+				}
 			}
-		} catch (e) {
-			print("--- No map found for property:  " + currentProp.name + "  --- Skipping clearMap()")
 		}
-	
+	} catch (e) {
+		print("Error processing node: " + node.name + " - " + e);
 	}
 }
