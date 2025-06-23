@@ -1,0 +1,36 @@
+// DAZ Studio version 4.22.0.16 filetype DAZ Script
+
+var selectedNode = Scene.getPrimarySelection();
+var shape = selectedNode.getObject().getCurrentShape();
+var mats = shape.getAllMaterials();
+var imageMgr = App.getImageMgr();
+var sceneHelper = new DzSceneHelper();
+
+for (var m = 0; m < mats.length; m++) {
+    var mat = mats[m];
+
+   var props = sceneHelper.getPropertiesOnMaterial(mat,true);
+    for (var i = 0; i < props.length; i++) {
+	    var prop = props[i];
+
+        try {
+	        var textureModifier = prop.getTextureModifier();
+		    if (textureModifier){
+	        	if (textureModifier.verticalTiles != 1 || textureModifier.horizontalTiles != 1 || 
+	        		textureModifier.horizontalTilingOffset != 0 || textureModifier.verticalTilingOffset != 0){
+		        	var settings = new DzSettings();
+		        	textureModifier.getAttributes(settings,DzTextureModifier.LocalTiling);
+		        	print(settings)
+		        	settings.setFloatValue("vertical_tiles",1);
+			        settings.setFloatValue("horizontal_tiles",1);
+	   	        	settings.setFloatValue("vertical_tiling_offset",0);
+			        settings.setFloatValue("horizontal_tiling_offset",0);
+					textureModifier.setAttributes(settings,DzTextureModifier.LocalTiling);
+				}
+			}
+        } catch (e) {
+		// some error we dont care about
+		}
+    }
+}
+    
