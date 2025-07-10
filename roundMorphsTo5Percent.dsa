@@ -1,0 +1,18 @@
+// DAZ Studio version 4.24.0.3 filetype DAZ Script
+
+var figure = Scene.getPrimarySelection();
+var object = figure.getObject();
+var noMods = object.getNumModifiers();
+for( i = 0; i < noMods; i += 1 ){
+	mod = object.getModifier(i);
+	if (mod.className() == "DzMorph")
+		{
+			var modProp = mod.getValueControl();
+			if (!modProp.isHidden() && !modProp.currentValueIsDefaultValue()){
+				var rawValue = modProp.getValue()
+				var roundedValue = Math.round(rawValue / 0.05) * 0.05;
+				modProp.setValue(roundedValue);
+				print("Changed " + modProp.getLabel() + "from: " + rawValue +  " to: " + roundedValue);
+		}
+	}
+}
