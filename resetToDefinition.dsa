@@ -1,0 +1,15 @@
+// DAZ Studio version 4.24.0.3 filetype DAZ Script
+
+// DAZ Studio version 4.24.0.3 filetype DAZ Script
+
+var figure = Scene.getPrimarySelection();
+var object = figure.getObject();
+var noMods = object.getNumModifiers();
+for( i = 0; i < noMods; i += 1 ){
+	mod = object.getModifier(i);
+	if (mod.className() == "DzMorph")
+		{
+			var modProp = mod.getValueControl();
+			modProp.restoreAttributesFromDefinition();
+	}
+}
