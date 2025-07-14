@@ -1,16 +1,23 @@
 // DAZ Studio version 4.24.0.3 filetype DAZ Script
 
-var sceneHelper = new DzSceneHelper();
 var selectedNodes = Scene.getSelectedNodeList();
 
-var figure = sceneHelper.collectNodes(true,true,true);
-
 for (var j = 0; j < selectedNodes.length; j++) {
+
 	var currentNode = selectedNodes[j];
+	var tempNode = currentNode;
+	var rootFound = false;
+
+	while (tempNode.getNodeParent()) {
+        tempNode = tempNode.getNodeParent();
+    }
+    var figure = tempNode;    
+
 	if (currentNode.className() == "DzFigure"){
-			var skele = currentNode.getFollowControl();
+		var skele = currentNode.getFollowControl();
+		if (skele){
 			skele.setValue(figure);
 			currentNode.setVisible(true);
-	
 		}
+	}
 }
