@@ -1,12 +1,17 @@
-// DAZ Studio version 4.23.1.36 filetype DAZ Script
+// DAZ Studio version 4.22.0.1 filetype DAZ Script
 
 (function(){
-	beginUndo();
-    var cameraToCopy = Scene.getPrimarySelection();
-	var viewPortMgr = MainWindow.getViewportMgr();
-	var viewPort = viewPortMgr.getActiveViewport().get3DViewport();
-	var camera = viewPort.getCamera();
-	camera.setWSPos(cameraToCopy.getWSPos());
-	camera.setWSRot(cameraToCopy.getWSRot());
-	acceptUndo("Matched Perspective to: " + cameraToCopy.name);
+//Get perspective view
+var viewPortMgr = MainWindow.getViewportMgr();
+var viewPort = viewPortMgr.getActiveViewport().get3DViewport();
+var camera = viewPort.getCamera();
+
+//Get camera to copy from
+cameraToCopy = Scene.getPrimarySelection();
+var cords = camera.getFocalPoint(); 
+var pos = camera.getWSPos();
+
+//Set perspective to cameras settings.
+cameraToCopy.setWSPos(pos);
+cameraToCopy.aimAt(cords);
 })();
